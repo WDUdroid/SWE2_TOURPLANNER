@@ -14,10 +14,50 @@ namespace SWE2_TOURPLANNER
         public ObservableCollection<TourEntry> Data { get; }
             = new ObservableCollection<TourEntry>();
 
-        public string TourName { get; set; }
-        public string TourDescription { get; set; }
-        public string RouteInformation { get; set; }
-        public string TourDistance { get; set; }
+        private string _tourName { get; set; }
+        private string _tourDescription { get; set; }
+        private string _routeInformation { get; set; }
+        private string _tourDistance { get; set; }
+
+        public string TourName
+        {
+            get => this._tourName;
+            set
+            {
+                this._tourName = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string TourDescription
+        {
+            get => this._tourDescription;
+            set
+            {
+                this._tourDescription = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
+        public string RouteInformation
+        {
+            get => this._routeInformation;
+            set
+            {
+                this._routeInformation = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        public string TourDistance
+        {
+            get => this._tourDistance;
+            set
+            {
+                this._tourDistance = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         public RelayCommand AddCommand { get; }
 
 
@@ -44,9 +84,6 @@ namespace SWE2_TOURPLANNER
                 TourDescription = string.Empty;
                 RouteInformation = string.Empty;
                 TourDistance = string.Empty;
-                OnPropertyChanged(nameof(TourDescription));
-                OnPropertyChanged("RouteInformation");
-                OnPropertyChanged("TourDistance");
                 IsUsernameFocused = true;
             });
             IsUsernameFocused = true;

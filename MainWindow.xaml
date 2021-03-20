@@ -12,92 +12,73 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="15*"/>
+            <RowDefinition Height="11*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="4*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0" Margin="0,0,0,0" Grid.RowSpan="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="27*"/>
-                <RowDefinition Height="405*"/>
-            </Grid.RowDefinitions>
-            <TextBox Grid.Row="0" Text="Search" VerticalContentAlignment="Center" Margin="5,5,5,5" MaxHeight="30"/>
-            <ListBox Grid.Row="1" Margin="5,0,5,5"/>
-        </Grid>
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="6*"/>
-                <RowDefinition Height="5*"/>
-            </Grid.RowDefinitions>
-
-            <ListBox Grid.Row="2" Margin="5" ItemsSource="{Binding Data}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding TourName}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Grid>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*" MinWidth="100" MaxWidth="100"/>
                 </Grid.ColumnDefinitions>
-                <Label Content="Tours"/>
-                <Button Content="Add" Grid.Column="1" Margin="2,5,1,2" Command="{Binding AddCommand}"/>
-                <Button Content="Delete" Grid.Column="2" Margin="1,5,4,2"/>
+                <Label Content="Search:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Text="" VerticalAlignment="Center" Margin="5"/>
             </Grid>
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Label Grid.Row="0" Content="Tourname:" VerticalContentAlignment="Bottom"/>
-                <TextBox Grid.Row="1" Text="{Binding TourName}" Margin="5,1,5,1"></TextBox>
-                <Label Grid.Row="2" Content="Tour description:" VerticalContentAlignment="Bottom"/>
-                <TextBox Grid.Row="3" Text="{Binding TourDescription}" Margin="5,1,5,1"></TextBox>
-                <Label Grid.Row="4" Content="Route information:" VerticalContentAlignment="Bottom"/>
-                <TextBox Grid.Row="5" Text="{Binding RouteInformation}" Margin="5,1,5,1"></TextBox>
-                <Label Grid.Row="6" Content="Tour distance:" VerticalContentAlignment="Bottom"/>
-                <TextBox Grid.Row="7" Text="{Binding TourDistance}" Margin="5,1,5,1"></TextBox>
-            </Grid>
-            <Border BorderThickness=".5" BorderBrush="Gray" Grid.Row="0" Grid.RowSpan="3"/>
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="7*"/>
-                </Grid.RowDefinitions>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="7*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="Tourname:"/>
-                    <Label Content="Placeholder" Grid.Column="1"/>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="3*"/>
-                        </Grid.ColumnDefinitions>
-                        <DataGrid Grid.Row="1" 
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="200"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <TabControl  Margin="5,5,5,5">
+                <TabItem Header="Tours">
+                    <Grid Background="#f5f5f5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ListBox Grid.Row="0" Margin="5" ItemsSource="{Binding Data}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TourName}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Button Grid.Row="1" Content="Delete" Margin="5"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="+" Margin="0">
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Content="Tourname:" VerticalContentAlignment="Bottom"/>
+                        <TextBox Grid.Row="1" Text="{Binding TourName}" Margin="5,1,5,1"></TextBox>
+                        <Label Grid.Row="2" Content="Tour description:" VerticalContentAlignment="Bottom"/>
+                        <TextBox Grid.Row="3" Text="{Binding TourDescription}" Margin="5,1,5,1"></TextBox>
+                        <Label Grid.Row="4" Content="Route information:" VerticalContentAlignment="Bottom"/>
+                        <TextBox Grid.Row="5" Text="{Binding RouteInformation}" Margin="5,1,5,1"></TextBox>
+                        <Label Grid.Row="6" Content="Tour distance:" VerticalContentAlignment="Bottom"/>
+                        <TextBox Grid.Row="7" Text="{Binding TourDistance}" Margin="5,1,5,1"></TextBox>
+                        <Button Grid.Row="8" Content="Add" Margin="5" Command="{Binding AddCommand}"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+            <TabControl Grid.Column="1"  Margin="5,5,5,5">
+                <TabItem Header="General">
+                    <Grid Background="#f5f5f5">
+                        <DataGrid Grid.Row="0" 
                                   ItemsSource="{Binding Data}" 
                                   AutoGenerateColumns="False" 
                                   AlternatingRowBackground="LightGray"
@@ -129,53 +110,36 @@
                                 </DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Image Grid.Column="1" Margin="0"/>
                     </Grid>
-                </Grid>
-            </Grid>
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="7*"/>
-                </Grid.RowDefinitions>
-                <Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="8*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Logs:"/>
-                        <Button Content="Add" Grid.Column="1" Margin="2"/>
-                        <Button Content="Delete" Grid.Column="2" Margin="2"/>
+                </TabItem>
+                <TabItem Header="Logs" Margin="0">
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid Grid.Row="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="date/time" Width="Auto"/>
+                                <DataGridTextColumn Header="total time (h)" Width="Auto"/>
+                                <DataGridTextColumn Header="distance (km)" Width="Auto"/>
+                                <DataGridTextColumn Header="elevation (km)" Width="Auto"/>
+                                <DataGridTextColumn Header="avg. speed (km/h)" Width="Auto"/>
+                                <DataGridTextColumn Header="bpm" Width="1*"/>
+                                <DataGridTextColumn Header="rating" Width="1*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Row="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="report" Width="1*"/>
+                                <DataGridTextColumn Header="used supplies" Width="1*"/>
+                                <DataGridTextColumn Header="tourmates" Width="1*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="2*"/>
-                    </Grid.RowDefinitions>
-                    <DataGrid Grid.Row="0">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="date/time" Width="Auto"/>
-                            <DataGridTextColumn Header="total time (h)" Width="Auto"/>
-                            <DataGridTextColumn Header="distance (km)" Width="Auto"/>
-                            <DataGridTextColumn Header="elevation (km)" Width="Auto"/>
-                            <DataGridTextColumn Header="avg. speed (km/h)" Width="Auto"/>
-                            <DataGridTextColumn Header="bpm" Width="1*"/>
-                            <DataGridTextColumn Header="rating" Width="1*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DataGrid Grid.Row="1">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="report" Width="1*"/>
-                            <DataGridTextColumn Header="used supplies" Width="1*"/>
-                            <DataGridTextColumn Header="tourmates" Width="1*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-
-            </Grid>
+                </TabItem>
+            </TabControl>
         </Grid>
+
     </Grid>
 </Window>
