@@ -12,13 +12,17 @@ namespace SWE2_TOURPLANNER.Model
         private string _tourDescription;
         private string _routeInformation;
         private string _tourDistance;
+        private string _tourFrom;
+        private string _tourTo;
 
-        public TourEntry(string tourName, string tourDescription, string routeInformation, string tourDistance)
+        public TourEntry(string tourName, string tourDescription, string routeInformation, string tourDistance, string tourFrom, string tourTo)
         {
             this._tourName = tourName;
             this._tourDescription = tourDescription;
             this._routeInformation = routeInformation;
             this._tourDistance = tourDistance;
+            this._tourFrom = tourFrom;
+            this._tourTo = tourTo;
         }
 
         public string TourName
@@ -57,6 +61,26 @@ namespace SWE2_TOURPLANNER.Model
             {
                 this._tourDistance = value;
                 this.OnPropertyChanged(nameof(TourDescription));
+            }
+        }
+
+        public string TourFrom
+        {
+            get => this._tourFrom;
+            set
+            {
+                this._tourFrom = value;
+                this.OnPropertyChanged(nameof(TourFrom));
+            }
+        }
+
+        public string TourTo
+        {
+            get => this._tourTo;
+            set
+            {
+                this._tourTo = value;
+                this.OnPropertyChanged(nameof(TourTo));
             }
         }
 

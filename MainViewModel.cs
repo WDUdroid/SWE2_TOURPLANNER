@@ -2,23 +2,32 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows.Controls;
 using SWE2_TOURPLANNER.Annotations;
+using SWE2_TOURPLANNER.DataAccessLayer;
 using SWE2_TOURPLANNER.Model;
 
 namespace SWE2_TOURPLANNER
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<TourEntry> Data { get; }
+        public static ObservableCollection<TourEntry> Data { get; }
+            = new ObservableCollection<TourEntry>();
+
+        public static ObservableCollection<TourEntry> CurrentData { get; }
             = new ObservableCollection<TourEntry>();
 
         private string _tourName { get; set; }
         private string _tourDescription { get; set; }
         private string _routeInformation { get; set; }
         private string _tourDistance { get; set; }
+        private string _tourFrom { get; set; }
+        private string _tourTo { get; set; }
 
+        private static string _currentlySelectedTour { get; set; }
         public string TourName
         {
             get => this._tourName;
@@ -58,46 +67,64 @@ namespace SWE2_TOURPLANNER
             }
         }
 
-        public RelayCommand AddCommand { get; }
-
-
-        private bool _isUsernameFocused;
-        public bool IsUsernameFocused
+        public string TourFrom
         {
-            get => _isUsernameFocused;
+            get => this._tourFrom;
             set
             {
-                // it needs to flip, else it does not execute properly, so let's reset here
-                _isUsernameFocused = false;
-                OnPropertyChanged();
-                _isUsernameFocused = value;
-                OnPropertyChanged();
+                this._tourFrom = value;
+                this.OnPropertyChanged();
             }
         }
 
+        public string TourTo
+        {
+            get => this._tourTo;
+            set
+            {
+                this._tourTo = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        public static string CurrentlySelectedTour
+        {
+            get => _currentlySelectedTour;
+            set => _currentlySelectedTour = value;
+        }
+
+        public RelayCommand AddCommand { get; }
+        public RelayCommand DeleteCommand { get; }
+
+
         public MainViewModel()
         {
+            ConfigFetcher configFetcher = ConfigFetcher.Instance;
+
             AddCommand = new RelayCommand((_) =>
             {
-                Data.Add(new TourEntry(this.TourName,this.TourDescription, this.RouteInformation, this.TourDistance));
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo));
                 TourName = String.Empty;
                 TourDescription = string.Empty;
                 RouteInformation = string.Empty;
                 TourDistance = string.Empty;
-                IsUsernameFocused = true;
+                TourFrom = string.Empty;
+                TourTo = string.Empty;
             });
-            IsUsernameFocused = true;
+
+            DeleteCommand = new RelayCommand((_) =>
+            {
+                if (CurrentlySelectedTour != null)
+                {
+                    Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
+                }
+            });
+
 
             // real data to add (not design data)
-            Data.Add(new TourEntry("Gute Tour","Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang"));
-            Data.Add(new TourEntry("Schlechte Tour","Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz"));
+            Data.Add(new TourEntry("Gute Tour", "Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang", "Afghanistan", "Berlin"));
+            Data.Add(new TourEntry("Schlechte Tour", "Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz", "Tirol", "Kiev"));
         }
-
-
-
-
-
-
 
 
         public event PropertyChangedEventHandler PropertyChanged;
