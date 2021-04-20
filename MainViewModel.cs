@@ -27,7 +27,7 @@ namespace SWE2_TOURPLANNER
         private string _tourDistance { get; set; }
         private string _tourFrom { get; set; }
         private string _tourTo { get; set; }
-
+        private string _tourImage { get; set; }
         private static string _currentlySelectedTour { get; set; }
         public string TourName
         {
@@ -88,6 +88,16 @@ namespace SWE2_TOURPLANNER
             }
         }
 
+        public string TourImage
+        {
+            get => this._tourImage;
+            set
+            {
+                this._tourImage = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         public static string CurrentlySelectedTour
         {
             get => _currentlySelectedTour;
@@ -101,12 +111,11 @@ namespace SWE2_TOURPLANNER
         public MainViewModel()
         {
             ConfigFetcher configFetcher = ConfigFetcher.Instance;
-            MapQuest test = MapQuest.Instance;
-            test.GetImage("Wien", "Berlin");
+            MapQuest GetMap = MapQuest.Instance;
 
             AddCommand = new RelayCommand((_) =>
             {
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo));
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, GetMap.GetImage(this.TourFrom, this.TourTo) ));
                 TourName = String.Empty;
                 TourDescription = string.Empty;
                 RouteInformation = string.Empty;
@@ -125,8 +134,8 @@ namespace SWE2_TOURPLANNER
 
 
             // real data to add (not design data)
-            Data.Add(new TourEntry("Gute Tour", "Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang", "Afghanistan", "Berlin"));
-            Data.Add(new TourEntry("Schlechte Tour", "Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz", "Tirol", "Kiev"));
+            Data.Add(new TourEntry("Gute Tour", "Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang", "Afghanistan", "Berlin", "D:\\Images\\maxresdefault.jpg"));
+            Data.Add(new TourEntry("Schlechte Tour", "Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz", "Tirol", "Kiev", "D:\\Images\\maxresdefault.jpg"));
         }
 
 

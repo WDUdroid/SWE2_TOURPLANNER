@@ -24,7 +24,7 @@ namespace SWE2_TOURPLANNER.Services
 
         private ConfigFetcher Config;
 
-        private string SessionId;
+        //private string SessionId;
 
         private MapQuest()
         {
@@ -34,43 +34,43 @@ namespace SWE2_TOURPLANNER.Services
             Client = new HttpClient();
         }
 
-        public async Task<string> GetMapQuestRouteSession(string from, string to)
-        {
-            var rawResponse = await Client.GetAsync(BaseURL + "/directions/v2/route?key=" + ApiKey + "&from=" + from + "&to=" + to);
-            var stringJsonResponse = rawResponse.Content.ReadAsStringAsync().Result;
+        //public async Task<string> GetMapQuestRouteSession(string from, string to)
+        //{
+        //    var rawResponse = await Client.GetAsync(BaseURL + "/directions/v2/route?key=" + ApiKey + "&from=" + from + "&to=" + to);
+        //    var stringJsonResponse = rawResponse.Content.ReadAsStringAsync().Result;
 
-            JObject jSonResponse = JObject.Parse(stringJsonResponse);
-
-
-            SessionId = (string)jSonResponse["route"]?["sessionId"];
-
-            LoadImage();
-
-            return (string)jSonResponse["route"]?["sessionId"];
-        }
-
-        public string LoadImage()
-        {
-            var url = BaseURL + "/staticmap/v5/map?session=" + SessionId + "&key=" + ApiKey;
-
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip;
+        //    JObject jSonResponse = JObject.Parse(stringJsonResponse);
 
 
-            using (HttpWebResponse lxResponse = (HttpWebResponse) request.GetResponse())
-            {
-                using (BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()))
-                {
-                    Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
-                    using (FileStream fs = new FileStream(Config.ImageSource + @"\test.png", FileMode.Create))
-                    {
-                        fs.Write(lnByte,0,lnByte.Length);
-                    }
-                }
-            }
+        //    SessionId = (string)jSonResponse["route"]?["sessionId"];
 
-            return "something";
-        }
+        //    LoadImage();
+
+        //    return (string)jSonResponse["route"]?["sessionId"];
+        //}
+
+        //public string LoadImage()
+        //{
+        //    var url = BaseURL + "/staticmap/v5/map?session=" + SessionId + "&key=" + ApiKey;
+
+        //    HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
+        //    request.AutomaticDecompression = DecompressionMethods.GZip;
+
+
+        //    using (HttpWebResponse lxResponse = (HttpWebResponse) request.GetResponse())
+        //    {
+        //        using (BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()))
+        //        {
+        //            Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
+        //            using (FileStream fs = new FileStream(Config.ImageSource + @"\test.png", FileMode.Create))
+        //            {
+        //                fs.Write(lnByte,0,lnByte.Length);
+        //            }
+        //        }
+        //    }
+
+        //    return "something";
+        //}
 
         public string GetImage(string from, string to)
         {
