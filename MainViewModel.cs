@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using SWE2_TOURPLANNER.Annotations;
 using SWE2_TOURPLANNER.DataAccessLayer;
 using SWE2_TOURPLANNER.Model;
+using SWE2_TOURPLANNER.Services;
 
 namespace SWE2_TOURPLANNER
 {
@@ -100,6 +101,8 @@ namespace SWE2_TOURPLANNER
         public MainViewModel()
         {
             ConfigFetcher configFetcher = ConfigFetcher.Instance;
+            MapQuest test = MapQuest.Instance;
+            test.GetImage("Wien", "Berlin");
 
             AddCommand = new RelayCommand((_) =>
             {
