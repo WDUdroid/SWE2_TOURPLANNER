@@ -8,10 +8,13 @@
 
   <ItemGroup>
     <Folder Include="Config\" />
+    <Folder Include="Images\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Geocoding.net" Version="3.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
 </Project>
