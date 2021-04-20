@@ -15,7 +15,6 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public string DatabaseSource;
         public string ImageSource;
-        public string MapQuestKey;
 
         private ConfigFetcher()
         {
@@ -33,19 +32,17 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             using (JsonTextReader reader = new JsonTextReader(file))
             {
                 configFileContent = (JObject)JToken.ReadFrom(reader);
-                //MessageBox.Show(configFileContent.ToString());
+                MessageBox.Show(configFileContent.ToString());
             }
 
             if (configFileContent.ContainsKey("DatabaseSource") && configFileContent.ContainsKey("ImageSource"))
             {
-                DatabaseSource = projectDirectory + (string) configFileContent["DatabaseSource"];
-                ImageSource = (string)configFileContent["ImageSource"];
-                MapQuestKey = (string)configFileContent["MapQuestKey"];
+                DatabaseSource = (string) configFileContent["DatabaseSource"];
+                ImageSource = (string) configFileContent["ImageSource"];
             }
 
-            //MessageBox.Show(DatabaseSource);
-            //MessageBox.Show(ImageSource);
-            //MessageBox.Show(MapQuestKey);
+            MessageBox.Show(DatabaseSource);
+            MessageBox.Show(ImageSource);
         }
 
         public static ConfigFetcher Instance => instance;

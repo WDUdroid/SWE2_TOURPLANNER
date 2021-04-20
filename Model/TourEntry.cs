@@ -14,7 +14,6 @@ namespace SWE2_TOURPLANNER.Model
         private string _tourDistance;
         private string _tourFrom;
         private string _tourTo;
-        //private string _tourImage;
 
         public TourEntry(string tourName, string tourDescription, string routeInformation, string tourDistance, string tourFrom, string tourTo)
         {
