@@ -9,7 +9,7 @@ namespace SWE2_TOURPLANNER.Model
     public class LogEntry : INotifyPropertyChanged
     {
         private string _tourName;
-        private string _logDate;
+        private DateTime _logDate;
         private int _totalTime;
         private int _distance;
         private int _elevation;
@@ -20,10 +20,11 @@ namespace SWE2_TOURPLANNER.Model
         private string _usedSupplies;
         private string _tourmates;
 
-        public LogEntry(string tourName, string logDate, int totalTime, int distance,
+        public LogEntry(string tourName, int totalTime, int distance,
                         int elevation, string avgSpeed, int bpm, string rating,
                         string report, string usedSupplies, string tourmates)
         {
+            DateTime logDate = DateTime.Now;
             this._tourName = tourName;
             this._logDate = logDate;
             this._totalTime = totalTime;
@@ -46,7 +47,7 @@ namespace SWE2_TOURPLANNER.Model
                 this.OnPropertyChanged(); // using CallerMemberName
             }
         }
-        public string LogDate
+        public DateTime LogDate
         {
             get => this._logDate;
             set

@@ -21,6 +21,10 @@ namespace SWE2_TOURPLANNER
         public static ObservableCollection<TourEntry> CurrentData { get; }
             = new ObservableCollection<TourEntry>();
 
+        public static ObservableCollection<LogEntry> CurrentTourLog { get; }
+            = new ObservableCollection<LogEntry>();
+
+        // Tour Props
         private string _tourName { get; set; }
         private string _tourDescription { get; set; }
         private string _routeInformation { get; set; }
@@ -28,7 +32,24 @@ namespace SWE2_TOURPLANNER
         private string _tourFrom { get; set; }
         private string _tourTo { get; set; }
         private string _tourImage { get; set; }
+
+        // Log Props
+        //private DateTime _logDate { get; set; }
+        private string _totalTime { get; set; }
+        private string _distance { get; set; }
+        private string _elevation { get; set; }
+        private string _avgSpeed { get; set; }
+        private string _bpm { get; set; }
+        private string _rating { get; set; }
+        private string _report { get; set; }
+        private string _usedSupplies { get; set; }
+        private string _tourmates { get; set; }
+
+        // other Props
         private static string _currentlySelectedTour { get; set; }
+        private static string _currentlySelectedLog { get; set; }
+
+        // Tour Getter/Setter
         public string TourName
         {
             get => this._tourName;
@@ -98,10 +119,107 @@ namespace SWE2_TOURPLANNER
             }
         }
 
+        // Log Getter/Setter
+        //public string LogDate
+        //{
+        //    get => this._logDate;
+        //    set
+        //    {
+        //        this._logDate = value;
+        //        this.OnPropertyChanged(); // using CallerMemberName
+        //    }
+        //}
+        public string TotalTime
+        {
+            get => this._totalTime;
+            set
+            {
+                this._totalTime = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string Distance
+        {
+            get => this._distance;
+            set
+            {
+                this._distance = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string Elevation
+        {
+            get => this._elevation;
+            set
+            {
+                this._elevation = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string AvgSpeed
+        {
+            get => this._avgSpeed;
+            set
+            {
+                this._avgSpeed = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string BPM
+        {
+            get => this._bpm;
+            set
+            {
+                this._bpm = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string Rating
+        {
+            get => this._rating;
+            set
+            {
+                this._rating = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string Report
+        {
+            get => this._report;
+            set
+            {
+                this._report = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string UsedSupplies
+        {
+            get => this._usedSupplies;
+            set
+            {
+                this._usedSupplies = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string Tourmates
+        {
+            get => this._tourmates;
+            set
+            {
+                this._tourmates = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
         public static string CurrentlySelectedTour
         {
             get => _currentlySelectedTour;
             set => _currentlySelectedTour = value;
+        }
+        public static string CurrentlySelectedLog
+        {
+            get => _currentlySelectedLog;
+            set => _currentlySelectedLog = value;
         }
 
         public RelayCommand AddTourCommand { get; }
@@ -118,13 +236,36 @@ namespace SWE2_TOURPLANNER
 
             AddTourCommand = new RelayCommand((_) =>
             {
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, GetMap.GetImage(this.TourFrom, this.TourTo) ));
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, GetMap.GetImage(this.TourFrom, this.TourTo)));
                 TourName = String.Empty;
                 TourDescription = string.Empty;
                 RouteInformation = string.Empty;
                 TourDistance = string.Empty;
                 TourFrom = string.Empty;
                 TourTo = string.Empty;
+            });
+
+            AddLogCommand = new RelayCommand((_) =>
+            {
+                CurrentTourLog.Add(new LogEntry(CurrentlySelectedTour, 
+                                            int.Parse(this.TotalTime), int.Parse(this.Distance), 
+                                            int.Parse(this.Elevation), this.AvgSpeed, 
+                                            int.Parse(this.BPM), this.Rating, this.Report, 
+                                            this.UsedSupplies, this.Tourmates));
+
+                LogDate = string.Empty;
+                TotalTime = string.Empty;
+                TourDistance = string.Empty;
+                TourFrom = string.Empty;
+                TourTo = string.Empty;
+            });
+
+            DeleteLogCommand = new RelayCommand((_) =>
+            {
+                if (CurrentlySelectedTour != null)
+                {
+                    CurrentTourLog.Remove(CurrentTourLog.Single(i => i.LogDate == CurrentlySelectedLog));
+                }
             });
 
             DeleteTourCommand = new RelayCommand((_) =>
