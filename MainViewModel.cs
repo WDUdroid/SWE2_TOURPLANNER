@@ -104,8 +104,11 @@ namespace SWE2_TOURPLANNER
             set => _currentlySelectedTour = value;
         }
 
-        public RelayCommand AddCommand { get; }
-        public RelayCommand DeleteCommand { get; }
+        public RelayCommand AddTourCommand { get; }
+        public RelayCommand DeleteTourCommand { get; }
+
+        public RelayCommand AddLogCommand { get; }
+        public RelayCommand DeleteLogCommand { get; }
 
 
         public MainViewModel()
@@ -113,7 +116,7 @@ namespace SWE2_TOURPLANNER
             ConfigFetcher configFetcher = ConfigFetcher.Instance;
             MapQuest GetMap = MapQuest.Instance;
 
-            AddCommand = new RelayCommand((_) =>
+            AddTourCommand = new RelayCommand((_) =>
             {
                 Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, GetMap.GetImage(this.TourFrom, this.TourTo) ));
                 TourName = String.Empty;
@@ -124,7 +127,7 @@ namespace SWE2_TOURPLANNER
                 TourTo = string.Empty;
             });
 
-            DeleteCommand = new RelayCommand((_) =>
+            DeleteTourCommand = new RelayCommand((_) =>
             {
                 if (CurrentlySelectedTour != null)
                 {
