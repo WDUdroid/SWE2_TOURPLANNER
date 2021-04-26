@@ -253,7 +253,6 @@ namespace SWE2_TOURPLANNER
                                             int.Parse(this.BPM), this.Rating, this.Report, 
                                             this.UsedSupplies, this.Tourmates));
 
-                LogDate = string.Empty;
                 TotalTime = string.Empty;
                 TourDistance = string.Empty;
                 TourFrom = string.Empty;
