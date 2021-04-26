@@ -21,7 +21,10 @@ namespace SWE2_TOURPLANNER
         public static ObservableCollection<TourEntry> CurrentData { get; }
             = new ObservableCollection<TourEntry>();
 
-        public static ObservableCollection<LogEntry> CurrentTourLog { get; }
+        public static ObservableCollection<LogEntry> CurrentTourLogs { get; set; }
+            = new ObservableCollection<LogEntry>();
+
+        public static ObservableCollection<LogEntry> CurrentLog { get; }
             = new ObservableCollection<LogEntry>();
 
         // Tour Props
@@ -47,7 +50,7 @@ namespace SWE2_TOURPLANNER
 
         // other Props
         private static string _currentlySelectedTour { get; set; }
-        private static string _currentlySelectedLog { get; set; }
+        private static DateTime _currentlySelectedLog { get; set; }
 
         // Tour Getter/Setter
         public string TourName
@@ -119,16 +122,7 @@ namespace SWE2_TOURPLANNER
             }
         }
 
-        // Log Getter/Setter
-        //public string LogDate
-        //{
-        //    get => this._logDate;
-        //    set
-        //    {
-        //        this._logDate = value;
-        //        this.OnPropertyChanged(); // using CallerMemberName
-        //    }
-        //}
+
         public string TotalTime
         {
             get => this._totalTime;
@@ -216,7 +210,7 @@ namespace SWE2_TOURPLANNER
             get => _currentlySelectedTour;
             set => _currentlySelectedTour = value;
         }
-        public static string CurrentlySelectedLog
+        public static DateTime CurrentlySelectedLog
         {
             get => _currentlySelectedLog;
             set => _currentlySelectedLog = value;
@@ -234,9 +228,22 @@ namespace SWE2_TOURPLANNER
             ConfigFetcher configFetcher = ConfigFetcher.Instance;
             MapQuest GetMap = MapQuest.Instance;
 
+            DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+
+            foreach (var item in tmpDatabaseHandler.GetToursFromDb())
+            {
+                Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
+                    item.TourDistance, item.TourFrom, item.TourTo, item.TourImage));
+            }
+
             AddTourCommand = new RelayCommand((_) =>
             {
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, GetMap.GetImage(this.TourFrom, this.TourTo)));
+                string tmpImageString = GetMap.GetImage(this.TourFrom, this.TourTo);
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, tmpImageString));
+
+                DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                tmpDatabaseHandler.AddTourToDb(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, tmpImageString);
+
                 TourName = String.Empty;
                 TourDescription = string.Empty;
                 RouteInformation = string.Empty;
@@ -247,23 +254,48 @@ namespace SWE2_TOURPLANNER
 
             AddLogCommand = new RelayCommand((_) =>
             {
-                CurrentTourLog.Add(new LogEntry(CurrentlySelectedTour, 
-                                            int.Parse(this.TotalTime), int.Parse(this.Distance), 
-                                            int.Parse(this.Elevation), this.AvgSpeed, 
-                                            int.Parse(this.BPM), this.Rating, this.Report, 
-                                            this.UsedSupplies, this.Tourmates));
+                if (CurrentlySelectedTour != null)
+                {
+                    var tmpLogDate = DateTime.Now;
+
+                    CurrentTourLogs.Add(new LogEntry(CurrentlySelectedTour, tmpLogDate,
+                        int.Parse(this.TotalTime), int.Parse(this.Distance),
+                        int.Parse(this.Elevation), this.AvgSpeed,
+                        int.Parse(this.BPM), this.Rating, this.Report,
+                        this.UsedSupplies, this.Tourmates));
+
+                    DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                    tmpDatabaseHandler.AddLogToTour(CurrentlySelectedTour, tmpLogDate,
+                        int.Parse(this.TotalTime), int.Parse(this.Distance),
+                        int.Parse(this.Elevation), this.AvgSpeed,
+                        int.Parse(this.BPM), this.Rating, this.Report,
+                        this.UsedSupplies, this.Tourmates);
+                }
 
                 TotalTime = string.Empty;
-                TourDistance = string.Empty;
-                TourFrom = string.Empty;
-                TourTo = string.Empty;
+                Distance = string.Empty;
+                Elevation = string.Empty;
+                AvgSpeed = string.Empty;
+                BPM = string.Empty;
+                Rating = string.Empty;
+                Report = string.Empty;
+                UsedSupplies = string.Empty;
+                Tourmates = string.Empty;
+
             });
 
             DeleteLogCommand = new RelayCommand((_) =>
             {
-                if (CurrentlySelectedTour != null)
+                if (CurrentlySelectedLog != null && CurrentlySelectedTour != null)
                 {
-                    CurrentTourLog.Remove(CurrentTourLog.Single(i => i.LogDate == CurrentlySelectedLog));
+                    DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                    tmpDatabaseHandler.DeleteLogFromTour(CurrentLog[0].TourName, CurrentLog[0].LogDate,
+                        int.Parse(CurrentLog[0].TotalTime.ToString()), int.Parse(CurrentLog[0].Distance.ToString()),
+                        int.Parse(CurrentLog[0].Elevation.ToString()), CurrentLog[0].AvgSpeed,
+                        int.Parse(CurrentLog[0].BPM.ToString()), CurrentLog[0].Rating, CurrentLog[0].Report,
+                        CurrentLog[0].UsedSupplies, CurrentLog[0].Tourmates);
+                    CurrentLog.Clear();
+                    CurrentTourLogs.Remove(CurrentTourLogs.Single(i => i.LogDate == CurrentlySelectedLog));
                 }
             });
 
@@ -271,14 +303,19 @@ namespace SWE2_TOURPLANNER
             {
                 if (CurrentlySelectedTour != null)
                 {
+                    DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                    tmpDatabaseHandler.DeleteTourFromDb(CurrentlySelectedTour);
+                    tmpDatabaseHandler.DeleteAllLogsFromTour(CurrentlySelectedTour);
+                    CurrentData.Clear();
                     Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
                 }
             });
 
 
             // real data to add (not design data)
-            Data.Add(new TourEntry("Gute Tour", "Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang", "Afghanistan", "Berlin", "D:\\Images\\maxresdefault.jpg"));
-            Data.Add(new TourEntry("Schlechte Tour", "Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz", "Tirol", "Kiev", "D:\\Images\\maxresdefault.jpg"));
+            //Data.Add(new TourEntry("Gute Tour", "Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang", "Afghanistan", "Berlin", "D:\\Images\\maxresdefault.jpg"));
+            //Data.Add(new TourEntry("Schlechte Tour", "Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz", "Tirol", "Kiev", "D:\\Images\\maxresdefault.jpg"));
+            //CurrentTourLogs.Add(new LogEntry("Gute Tour",1, 1, 1, "very fast", 1, "nice tour", "D:\\Images\\maxresdefault.jpg", "a lot", "Treeman"));
         }
 
 

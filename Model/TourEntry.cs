@@ -27,6 +27,7 @@ namespace SWE2_TOURPLANNER.Model
             this._tourImage = tourImage;
         }
 
+
         public string TourName
         {
             get => this._tourName;

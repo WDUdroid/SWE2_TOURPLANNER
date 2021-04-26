@@ -38,7 +38,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
             if (configFileContent.ContainsKey("DatabaseSource") && configFileContent.ContainsKey("ImageSource"))
             {
-                DatabaseSource = projectDirectory + (string) configFileContent["DatabaseSource"];
+                DatabaseSource = (string)configFileContent["DatabaseSource"];
                 ImageSource = (string)configFileContent["ImageSource"];
                 MapQuestKey = (string)configFileContent["MapQuestKey"];
             }
