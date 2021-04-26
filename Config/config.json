@@ -1,5 +1,5 @@
 {
-  "DatabaseSource": "DatabaseDummy",
+  "DatabaseSource": "Host=localhost;Username=postgres;Password=postgres;Database=tourplanner",
   "ImageSource": "D:\\Images",
   "MapQuestKey": "NJnX2PN3zrsW27SPSGgGALeviIy3I3jg"
 }
