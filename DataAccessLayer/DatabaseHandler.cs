@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -192,6 +193,56 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             }
 
             return status;
+        }
+
+        public ObservableCollection<TourEntry> GetToursContainingString(string searchString)
+        {
+            if (searchString == null)
+            {
+                return GetToursFromDb();
+            }
+
+            ObservableCollection<TourEntry> tmpLogContainer = new ObservableCollection<TourEntry>();
+
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+            string sql1 = $"SELECT * FROM tours FULL JOIN logs ON tours.tourname = logs.tourname WHERE " +
+                          $" LOWER(tours.tourname) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(tours.tourdescription) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(tours.routeinformation) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(tours.tourdistance) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(tours.tourfrom) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(tours.tourto) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(tours.tourimage) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(logs.logdate) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(logs.avgspeed) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(logs.rating) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(logs.report) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(logs.usedsupplies) LIKE LOWER('%{searchString}%') OR " +
+                          $" LOWER(logs.tourmates) LIKE LOWER('%{searchString}%')";
+            using var cmd1 = new NpgsqlCommand(sql1, con);
+
+            using var reader = cmd1.ExecuteReader();
+
+
+            while (reader.Read())
+            {
+                string tourName = reader.GetString(reader.GetOrdinal("tourname"));
+                string tourDescription = reader.GetString(reader.GetOrdinal("tourdescription"));
+                string routeInformation = reader.GetString(reader.GetOrdinal("routeinformation"));
+                string tourDistance = reader.GetString(reader.GetOrdinal("Tourdistance"));
+                string tourFrom = reader.GetString(reader.GetOrdinal("tourfrom"));
+                string tourTo = reader.GetString(reader.GetOrdinal("tourTo"));
+                string tourImage = reader.GetString(reader.GetOrdinal("tourimage"));
+
+                if (!tmpLogContainer.Any(x => x.TourName == tourName)){
+                    tmpLogContainer.Add(new TourEntry(tourName, tourDescription, routeInformation, tourDistance, tourFrom, tourTo, tourImage));
+                }
+            }
+            con.Close();
+
+            return tmpLogContainer;
         }
 
 

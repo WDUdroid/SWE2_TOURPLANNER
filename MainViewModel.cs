@@ -15,6 +15,7 @@ namespace SWE2_TOURPLANNER
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+
         public static ObservableCollection<TourEntry> Data { get; }
             = new ObservableCollection<TourEntry>();
 
@@ -241,7 +242,7 @@ namespace SWE2_TOURPLANNER
                 string tmpImageString = GetMap.GetImage(this.TourFrom, this.TourTo);
                 Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, tmpImageString));
 
-                DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                 tmpDatabaseHandler.AddTourToDb(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, tmpImageString);
 
                 TourName = String.Empty;
@@ -264,7 +265,7 @@ namespace SWE2_TOURPLANNER
                         int.Parse(this.BPM), this.Rating, this.Report,
                         this.UsedSupplies, this.Tourmates));
 
-                    DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                    //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                     tmpDatabaseHandler.AddLogToTour(CurrentlySelectedTour, tmpLogDate,
                         int.Parse(this.TotalTime), int.Parse(this.Distance),
                         int.Parse(this.Elevation), this.AvgSpeed,
@@ -288,7 +289,7 @@ namespace SWE2_TOURPLANNER
             {
                 if (CurrentlySelectedLog != null && CurrentlySelectedTour != null)
                 {
-                    DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                    //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                     tmpDatabaseHandler.DeleteLogFromTour(CurrentLog[0].TourName, CurrentLog[0].LogDate,
                         int.Parse(CurrentLog[0].TotalTime.ToString()), int.Parse(CurrentLog[0].Distance.ToString()),
                         int.Parse(CurrentLog[0].Elevation.ToString()), CurrentLog[0].AvgSpeed,
@@ -303,7 +304,7 @@ namespace SWE2_TOURPLANNER
             {
                 if (CurrentlySelectedTour != null)
                 {
-                    DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                    //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                     tmpDatabaseHandler.DeleteTourFromDb(CurrentlySelectedTour);
                     tmpDatabaseHandler.DeleteAllLogsFromTour(CurrentlySelectedTour);
                     CurrentData.Clear();

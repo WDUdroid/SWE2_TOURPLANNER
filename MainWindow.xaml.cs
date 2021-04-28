@@ -56,10 +56,31 @@ namespace SWE2_TOURPLANNER
             }
         }
 
+        private void searchTextChanged(object sender, TextChangedEventArgs args)
+        {
+
+            MainViewModel.Data.Clear();
+            DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+
+            foreach (var item in tmpDatabaseHandler.GetToursContainingString(SearchBox.Text))
+            {
+                MainViewModel.Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
+                    item.TourDistance, item.TourFrom, item.TourTo,
+                    item.TourImage));
+            }
+
+        }
+
+
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            SearchBox.Text = "";
         }
     }
 }
