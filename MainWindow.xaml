@@ -27,7 +27,7 @@
                     <ColumnDefinition Width="*" MinWidth="100" MaxWidth="100" />
                 </Grid.ColumnDefinitions>
                 <Label Content="Search:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" />
-                <TextBox Name="SearchBox" Grid.Column="1" HorizontalAlignment="Stretch" Text="" VerticalAlignment="Center" Margin="5" TextChanged="searchTextChanged"/>
+                <TextBox Name="SearchBox" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5"/>
             </Grid>
             <Label Grid.Column="2" Content="{Binding CurrentData[0].TourName}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" FontSize="18" MaxWidth="300"/>
         </Grid>
@@ -43,7 +43,7 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <ListBox Name="TourSelectListBox" Grid.Row="0" Margin="5" ItemsSource="{Binding Data}" SelectionChanged="tourSelectListBox_SelectionChanged">
+                        <ListBox Name="TourSelectListBox" Grid.Row="0" Margin="5" ItemsSource="{Binding Data}" SelectedItem="{Binding SelectedTourListItem}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TourName}" />
@@ -84,7 +84,7 @@
                             <TextBox Grid.Row="9" Text="{Binding TourFrom}" Margin="5,1,5,1"></TextBox>
                             <Label Grid.Row="10" Content="To:" VerticalContentAlignment="Bottom" />
                             <TextBox Grid.Row="11" Text="{Binding TourTo}" Margin="5,1,5,1"></TextBox>
-                            <Button Grid.Row="12" Content="Add" Margin="5" Command="{Binding AddTourCommand}" Click="ButtonBase_OnClick"/>
+                            <Button Grid.Row="12" Content="Add" Margin="5" Command="{Binding AddTourCommand}"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
@@ -157,7 +157,7 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <ListBox Name="LogSelectListBox" Grid.Row="0" Margin="5" ItemsSource="{Binding CurrentTourLogs}" SelectionChanged="logSelectListBox_SelectionChanged">
+                                <ListBox Name="LogSelectListBox" Grid.Row="0" Margin="5" ItemsSource="{Binding CurrentTourLogs}" SelectedItem="{Binding SelectedLogListItem}" >
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding LogDate}" />

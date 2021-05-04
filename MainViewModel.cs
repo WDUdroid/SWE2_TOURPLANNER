@@ -15,6 +15,7 @@ namespace SWE2_TOURPLANNER
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        private BusinessLayer _businessLayer = BusinessLayer.Instance;
 
         public static ObservableCollection<TourEntry> Data { get; }
             = new ObservableCollection<TourEntry>();
@@ -48,6 +49,11 @@ namespace SWE2_TOURPLANNER
         private string _report { get; set; }
         private string _usedSupplies { get; set; }
         private string _tourmates { get; set; }
+
+        // UI Bindings list and search
+        private string _searchText;
+        private TourEntry _selectedTourListItem;
+        private LogEntry _selectedLogListItem;
 
         // other Props
         private static string _currentlySelectedTour { get; set; }
@@ -206,6 +212,39 @@ namespace SWE2_TOURPLANNER
             }
         }
 
+        public string SearchText
+        {
+            get => this._searchText;
+            set
+            {
+                this._searchText = value;
+                SearchTextProcessing(_searchText);
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
+        public TourEntry SelectedTourListItem
+        {
+            get => this._selectedTourListItem;
+            set
+            {
+                this._selectedTourListItem = value;
+                SelectedTourListItemProcessing(_selectedTourListItem);
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
+        public LogEntry SelectedLogListItem
+        {
+            get => this._selectedLogListItem;
+            set
+            {
+                this._selectedLogListItem = value;
+                SelectedLogListItemProcessing(_selectedLogListItem);
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
         public static string CurrentlySelectedTour
         {
             get => _currentlySelectedTour;
@@ -231,7 +270,7 @@ namespace SWE2_TOURPLANNER
 
             DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
 
-            foreach (var item in tmpDatabaseHandler.GetToursFromDb())
+            foreach (var item in _businessLayer.GetAllTours())
             {
                 Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
                     item.TourDistance, item.TourFrom, item.TourTo, item.TourImage));
@@ -239,11 +278,15 @@ namespace SWE2_TOURPLANNER
 
             AddTourCommand = new RelayCommand((_) =>
             {
-                string tmpImageString = GetMap.GetImage(this.TourFrom, this.TourTo);
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, tmpImageString));
+                string tmpImageString = _businessLayer.GetImage(this.TourFrom, this.TourTo);
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, 
+                                            this.TourDistance, this.TourFrom, this.TourTo, tmpImageString));
 
                 //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                tmpDatabaseHandler.AddTourToDb(this.TourName, this.TourDescription, this.RouteInformation, this.TourDistance, this.TourFrom, this.TourTo, tmpImageString);
+                _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation, 
+                                        this.TourDistance, this.TourFrom, this.TourTo, tmpImageString);
+
+                SearchText = "";
 
                 TourName = String.Empty;
                 TourDescription = string.Empty;
@@ -266,12 +309,13 @@ namespace SWE2_TOURPLANNER
                         this.UsedSupplies, this.Tourmates));
 
                     //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                    tmpDatabaseHandler.AddLogToTour(CurrentlySelectedTour, tmpLogDate,
-                        int.Parse(this.TotalTime), int.Parse(this.Distance),
-                        int.Parse(this.Elevation), this.AvgSpeed,
-                        int.Parse(this.BPM), this.Rating, this.Report,
+                    _businessLayer.AddLog(CurrentlySelectedTour, tmpLogDate,
+                        this.TotalTime, this.Distance,
+                        this.Elevation, this.AvgSpeed,
+                        this.BPM, this.Rating, this.Report,
                         this.UsedSupplies, this.Tourmates);
                 }
+
 
                 TotalTime = string.Empty;
                 Distance = string.Empty;
@@ -287,13 +331,13 @@ namespace SWE2_TOURPLANNER
 
             DeleteLogCommand = new RelayCommand((_) =>
             {
-                if (CurrentlySelectedLog != null && CurrentlySelectedTour != null)
+                if (CurrentLog.Count != 0 && CurrentlySelectedTour != null)
                 {
                     //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                    tmpDatabaseHandler.DeleteLogFromTour(CurrentLog[0].TourName, CurrentLog[0].LogDate,
-                        int.Parse(CurrentLog[0].TotalTime.ToString()), int.Parse(CurrentLog[0].Distance.ToString()),
-                        int.Parse(CurrentLog[0].Elevation.ToString()), CurrentLog[0].AvgSpeed,
-                        int.Parse(CurrentLog[0].BPM.ToString()), CurrentLog[0].Rating, CurrentLog[0].Report,
+                    _businessLayer.DeleteLog(CurrentLog[0].TourName, CurrentLog[0].LogDate,
+                        CurrentLog[0].TotalTime.ToString(), CurrentLog[0].Distance.ToString(),
+                        CurrentLog[0].Elevation.ToString(), CurrentLog[0].AvgSpeed,
+                        CurrentLog[0].BPM.ToString(), CurrentLog[0].Rating, CurrentLog[0].Report,
                         CurrentLog[0].UsedSupplies, CurrentLog[0].Tourmates);
                     CurrentLog.Clear();
                     CurrentTourLogs.Remove(CurrentTourLogs.Single(i => i.LogDate == CurrentlySelectedLog));
@@ -302,21 +346,65 @@ namespace SWE2_TOURPLANNER
 
             DeleteTourCommand = new RelayCommand((_) =>
             {
-                if (CurrentlySelectedTour != null)
+                if (CurrentlySelectedTour != null && Data.Any(i => i.TourName == CurrentlySelectedTour))
                 {
                     //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                    tmpDatabaseHandler.DeleteTourFromDb(CurrentlySelectedTour);
-                    tmpDatabaseHandler.DeleteAllLogsFromTour(CurrentlySelectedTour);
+                    _businessLayer.DeleteTour(CurrentlySelectedTour);
                     CurrentData.Clear();
                     Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
                 }
             });
 
 
-            // real data to add (not design data)
-            //Data.Add(new TourEntry("Gute Tour", "Eine schöne Tour", "Die Route ist hart und schwer", "Es ist sehr lang", "Afghanistan", "Berlin", "D:\\Images\\maxresdefault.jpg"));
-            //Data.Add(new TourEntry("Schlechte Tour", "Eine hässliche Tour", "Die Route ist leicht und leicht", "Es ist sehr kurz", "Tirol", "Kiev", "D:\\Images\\maxresdefault.jpg"));
-            //CurrentTourLogs.Add(new LogEntry("Gute Tour",1, 1, 1, "very fast", 1, "nice tour", "D:\\Images\\maxresdefault.jpg", "a lot", "Treeman"));
+        }
+
+        void SearchTextProcessing(string searchText)
+        {
+            Data.Clear();
+
+            foreach (var item in _businessLayer.GetToursContainingString(searchText))
+            {
+                Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
+                    item.TourDistance, item.TourFrom, item.TourTo,
+                    item.TourImage));
+            }
+
+        }
+
+        void SelectedTourListItemProcessing(TourEntry selectedTourEntry)
+        {
+            if (selectedTourEntry != null)
+            {
+                CurrentLog.Clear();
+                CurrentlySelectedTour = selectedTourEntry.TourName;
+                CurrentData.Clear();
+                CurrentData.Add(new TourEntry(selectedTourEntry.TourName, selectedTourEntry.TourDescription,
+                    selectedTourEntry.RouteInformation, selectedTourEntry.TourDistance, selectedTourEntry.TourFrom,
+                    selectedTourEntry.TourTo, selectedTourEntry.TourImage));
+
+                CurrentTourLogs.Clear();
+
+                foreach (var item in _businessLayer.GetLogsOfTour(selectedTourEntry.TourName))
+                {
+                    CurrentTourLogs.Add(new LogEntry(item.TourName, item.LogDate, item.TotalTime,
+                        item.Distance, item.Elevation, item.AvgSpeed,
+                        item.BPM, item.Rating, item.Report, item.UsedSupplies,
+                        item.Tourmates));
+                }
+            }
+        }
+
+        void SelectedLogListItemProcessing(LogEntry selectedLogEntry)
+        {
+            if (selectedLogEntry != null)
+            {
+                CurrentlySelectedLog = selectedLogEntry.LogDate;
+                CurrentLog.Clear();
+                CurrentLog.Add(new LogEntry(selectedLogEntry.TourName, selectedLogEntry.LogDate, 
+                                                selectedLogEntry.TotalTime, selectedLogEntry.Distance, selectedLogEntry.Elevation,
+                                                selectedLogEntry.AvgSpeed, selectedLogEntry.BPM, selectedLogEntry.Rating, selectedLogEntry.Report,
+                                                selectedLogEntry.UsedSupplies, selectedLogEntry.Tourmates));
+            }
         }
 
 

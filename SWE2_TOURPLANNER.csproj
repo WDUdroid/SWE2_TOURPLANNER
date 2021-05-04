@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="BusinessLayer\" />
     <Folder Include="Config\" />
     <Folder Include="Images\" />
   </ItemGroup>
