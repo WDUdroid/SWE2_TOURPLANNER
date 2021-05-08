@@ -25,6 +25,10 @@ namespace SWE2_TOURPLANNER
             
         }
 
+        public MapQuestDataHelper GetMapQuestInfo(string tourFrom, string tourTo, string routeType)
+        {
+            return Map.GetMapQuestRouteSession(tourFrom, tourTo, routeType);
+        }
 
         public string GetImage(string tourFrom, string tourTo)
         {
@@ -73,7 +77,7 @@ namespace SWE2_TOURPLANNER
             return 0;
         }
 
-        public int ExportToursAsPDF()
+        public int ExportTourAsPDF(string tourName)
         {
             var fileDialog = new FileDialog();
             fileDialog.SaveFileDialogFunc();
@@ -86,8 +90,7 @@ namespace SWE2_TOURPLANNER
             var fileDialog = new FileDialog();
             string dirToSaveTo = fileDialog.SaveFileDialogFunc();
 
-            var dataToSave = new List<PortHelper>();
-            dataToSave = Database.GetExportablePackage();
+            var dataToSave = Database.GetExportablePackage();
 
             //PortListHelper dataObjectToSave = new PortListHelper(dataToSave);
 

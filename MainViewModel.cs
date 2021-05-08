@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Controls;
 using SWE2_TOURPLANNER.Annotations;
 using SWE2_TOURPLANNER.DataAccessLayer;
+using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Model;
 using SWE2_TOURPLANNER.Services;
 
@@ -37,6 +38,9 @@ namespace SWE2_TOURPLANNER
         private string _tourFrom { get; set; }
         private string _tourTo { get; set; }
         private string _tourImage { get; set; }
+
+        // Tour Option Props
+        private string _routeType { get; set; }
 
         // Log Props
         //private DateTime _logDate { get; set; }
@@ -125,6 +129,16 @@ namespace SWE2_TOURPLANNER
             set
             {
                 this._tourImage = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        public string RouteType
+        {
+            get => this._routeType;
+            set
+            {
+                this._routeType = value;
                 this.OnPropertyChanged();
             }
         }
@@ -262,7 +276,7 @@ namespace SWE2_TOURPLANNER
         public RelayCommand AddLogCommand { get; }
         public RelayCommand DeleteLogCommand { get; }
 
-        public RelayCommand ExportToursAsPDFCommand { get; }
+        public RelayCommand ExportTourAsPDFCommand { get; }
         public RelayCommand ExportToursAsJSONCommand { get; }
         public RelayCommand ImportToursCommand { get; }
 
@@ -282,13 +296,22 @@ namespace SWE2_TOURPLANNER
 
             AddTourCommand = new RelayCommand((_) =>
             {
-                string tmpImageString = _businessLayer.GetImage(this.TourFrom, this.TourTo);
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
-                                            this.TourDistance, this.TourFrom, this.TourTo, tmpImageString));
+                MapQuestDataHelper tmpDC = _businessLayer.GetMapQuestInfo(this.TourFrom, this.TourTo, this.RouteType);
 
-                //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                this.RouteInformation = $"Tour length: {tmpDC.Distance}\r\n" +
+                                        $"Approx. time to complete: {tmpDC.ApproxTime}\r\n" +
+                                        $"Tolls: {tmpDC.HasTollRoad}\r\n" +
+                                        $"Bridges: {tmpDC.HasBridge}\r\n" +
+                                        $"Ferries: {tmpDC.HasFerry}\r\n" +
+                                        $"Highways: {tmpDC.HasHighway}\r\n" +
+                                        $"Tunnels: {tmpDC.HasTunnel}\r\n" +
+                                        $"Used sessionID: {tmpDC.SessionId}";
+
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
+                                            tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage));
+
                 _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation,
-                                        this.TourDistance, this.TourFrom, this.TourTo, tmpImageString);
+                                        tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage);
 
                 SearchText = "";
 
@@ -296,6 +319,7 @@ namespace SWE2_TOURPLANNER
                 TourDescription = string.Empty;
                 RouteInformation = string.Empty;
                 TourDistance = string.Empty;
+                RouteType = "fastest";
                 TourFrom = string.Empty;
                 TourTo = string.Empty;
             });
@@ -359,9 +383,9 @@ namespace SWE2_TOURPLANNER
                 }
             });
 
-            ExportToursAsPDFCommand = new RelayCommand((_) =>
+            ExportTourAsPDFCommand = new RelayCommand((_) =>
             {
-                _businessLayer.ExportToursAsPDF();
+                _businessLayer.ExportTourAsPDF(CurrentlySelectedTour);
             });
 
             ExportToursAsJSONCommand = new RelayCommand((_) =>

@@ -19,7 +19,7 @@
         <DockPanel Grid.Row="0">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="File">
-                    <MenuItem Header="Export tours as PDF (WIP)" Command="{Binding ExportToursAsPDFCommand}" />
+                    <MenuItem Header="Export tours as PDF (WIP)" Command="{Binding ExportTourAsPDFCommand}" />
                     <MenuItem Header="Export tours as JSON" Command="{Binding ExportToursAsJSONCommand}" />
                     <MenuItem Header="Import tours" Command="{Binding ImportToursCommand}" />
                 </MenuItem>
@@ -86,14 +86,17 @@
                             <TextBox Grid.Row="1" Text="{Binding TourName}" Margin="5,1,5,1"></TextBox>
                             <Label Grid.Row="2" Content="Tour description:" VerticalContentAlignment="Bottom" />
                             <TextBox Grid.Row="3" Text="{Binding TourDescription}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
-                            <Label Grid.Row="4" Content="Route information:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="5" Text="{Binding RouteInformation}" Margin="5,1,5,1"></TextBox>
-                            <Label Grid.Row="6" Content="Tour distance:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="7" Text="{Binding TourDistance}" Margin="5,1,5,1"></TextBox>
+                            <Label Grid.Row="4" Content="Route Type:" VerticalContentAlignment="Bottom" />
+                            <ComboBox Grid.Row="5" Text="{Binding RouteType}" Margin="5,1,5,1">
+                                <ComboBoxItem IsSelected="True">fastest</ComboBoxItem>
+                                <ComboBoxItem>shortest</ComboBoxItem>
+                                <ComboBoxItem>pedestrian</ComboBoxItem>
+                                <ComboBoxItem>bicycle</ComboBoxItem>
+                            </ComboBox>
                             <Label Grid.Row="8" Content="From:" VerticalContentAlignment="Bottom" />
                             <TextBox Grid.Row="9" Text="{Binding TourFrom}" Margin="5,1,5,1"></TextBox>
                             <Label Grid.Row="10" Content="To:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="11" Text="{Binding TourTo}" Margin="5,1,5,1"></TextBox>
+                            <TextBox Grid.Row="11" Text="{Binding TourTo}" Margin="5,1,5,10"></TextBox>
                             <Button Grid.Row="12" Content="Add" Margin="5" Command="{Binding AddTourCommand}"/>
                         </Grid>
                     </ScrollViewer>
