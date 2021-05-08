@@ -44,5 +44,18 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
             return "ERROR";
         }
+
+        public string SavePdfDialogFunc()
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.InitialDirectory = @"C:\";
+            saveFileDialog1.Title = "Save text Files";
+            saveFileDialog1.DefaultExt = "pdf";
+            saveFileDialog1.Filter = "All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.ShowDialog();
+
+            return saveFileDialog1.FileName;
+        }
     }
 }

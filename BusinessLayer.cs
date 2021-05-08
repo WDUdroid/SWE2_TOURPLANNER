@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Windows;
+using IronPdf;
 using Newtonsoft.Json;
 using SWE2_TOURPLANNER.DataAccessLayer;
 using SWE2_TOURPLANNER.HelperObjects;
@@ -19,6 +20,8 @@ namespace SWE2_TOURPLANNER
         private ConfigFetcher Config = ConfigFetcher.Instance;
         private DatabaseHandler Database = DatabaseHandler.Instance;
         private MapQuest Map = MapQuest.Instance;
+        private PdfCreater Pdf = new PdfCreater();
+        private IO iO = new IO();
 
         private BusinessLayer()
         {
@@ -80,7 +83,10 @@ namespace SWE2_TOURPLANNER
         public int ExportTourAsPDF(string tourName)
         {
             var fileDialog = new FileDialog();
-            fileDialog.SaveFileDialogFunc();
+            string dirToSaveTo = fileDialog.SavePdfDialogFunc();
+
+            PdfDocument compPdf = Pdf.CreatePdf(Database.GetTour(tourName), Database.GetLogsList(tourName));
+            iO.SavePdf(compPdf, dirToSaveTo);
 
             return 0;
         }
@@ -109,7 +115,6 @@ namespace SWE2_TOURPLANNER
 
         public int ImportTours()
         {
-            var iO = new IO();
             var fileDialog = new FileDialog();
             string fileDir = fileDialog.OpenFileDialogFunc();
 

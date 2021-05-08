@@ -314,6 +314,36 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             return tmpLogContainer;
         }
 
+        public TourEntry GetTour(string tourName)
+        {
+            TourEntry tmpTourContainer = null;
+
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+            string sql1 = $"SELECT * FROM tours WHERE tourname = '{tourName}'";
+            using var cmd1 = new NpgsqlCommand(sql1, con);
+
+            using var reader = cmd1.ExecuteReader();
+
+
+            while (reader.Read())
+            {
+                string tourDescription = reader.GetString(reader.GetOrdinal("tourdescription"));
+                string routeInformation = reader.GetString(reader.GetOrdinal("routeinformation"));
+                string tourDistance = reader.GetString(reader.GetOrdinal("Tourdistance"));
+                string tourFrom = reader.GetString(reader.GetOrdinal("tourfrom"));
+                string tourTo = reader.GetString(reader.GetOrdinal("tourTo"));
+                string tourImage = reader.GetString(reader.GetOrdinal("tourimage"));
+
+                tmpTourContainer = new TourEntry(tourName, tourDescription, routeInformation, tourDistance, tourFrom, tourTo, tourImage);
+                
+            }
+            con.Close();
+
+            return tmpTourContainer;
+        }
+
         public int DoesTourAlreadyExist(string tourName)
         {
             using var con = new NpgsqlConnection(DatabaseSource);

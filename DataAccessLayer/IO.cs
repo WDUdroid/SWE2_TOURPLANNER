@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using IronPdf;
 
 namespace SWE2_TOURPLANNER.DataAccessLayer
 {
@@ -21,6 +22,12 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             }
 
             return json;
+        }
+
+        public int SavePdf(PdfDocument pdf, string path)
+        {
+            pdf.SaveAs(path);
+            return 0;
         }
     }
 }
