@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Text;
+using System.Windows;
+using Newtonsoft.Json;
 using SWE2_TOURPLANNER.DataAccessLayer;
+using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Model;
 using SWE2_TOURPLANNER.Services;
 
@@ -20,6 +24,7 @@ namespace SWE2_TOURPLANNER
         {
             
         }
+
 
         public string GetImage(string tourFrom, string tourTo)
         {
@@ -64,6 +69,78 @@ namespace SWE2_TOURPLANNER
         {
             Database.DeleteTourFromDb(tourName);
             Database.DeleteAllLogsFromTour(tourName);
+
+            return 0;
+        }
+
+        public int ExportToursAsPDF()
+        {
+            var fileDialog = new FileDialog();
+            fileDialog.SaveFileDialogFunc();
+
+            return 0;
+        }
+
+        public int ExportToursAsJSON()
+        {
+            var fileDialog = new FileDialog();
+            string dirToSaveTo = fileDialog.SaveFileDialogFunc();
+
+            var dataToSave = new List<PortHelper>();
+            dataToSave = Database.GetExportablePackage();
+
+            //PortListHelper dataObjectToSave = new PortListHelper(dataToSave);
+
+            string jsonString = JsonConvert.SerializeObject(dataToSave);
+            if (dirToSaveTo != String.Empty)
+            {
+                File.WriteAllText(dirToSaveTo, jsonString);
+            }
+            else
+            {
+                return -1;
+            }
+
+            return 0;
+        }
+
+        public int ImportTours()
+        {
+            var iO = new IO();
+            var fileDialog = new FileDialog();
+            string fileDir = fileDialog.OpenFileDialogFunc();
+
+            if (fileDir == "ERROR")
+            {
+                MessageBox.Show("Could not get File Directory!");
+                return -1;
+            }
+
+            string tmpJsonRaw = iO.GetImportJson(fileDir);
+            MessageBox.Show(tmpJsonRaw);
+
+            List<PortHelper> jsonConverted = new List<PortHelper>();
+            jsonConverted = JsonConvert.DeserializeObject<List<PortHelper>>(tmpJsonRaw);
+
+            for (int i = 0; i < jsonConverted.Count; i++)
+            {
+                if (Database.DoesTourAlreadyExist(jsonConverted[i].Tour.TourName) != -1)
+                {
+                    Database.ImportTourToDb(jsonConverted[i].Tour);
+                }
+
+                if (jsonConverted[i].Logs.Count > 0)
+                {
+                    for (int j = 0; j < jsonConverted[i].Logs.Count; j++)
+                    {
+                        if (Database.DoesLogAlreadyExist(jsonConverted[i].Logs[j].TourName,
+                            jsonConverted[i].Logs[j].LogDate) != -1)
+                        {
+                            Database.ImportLogToTour(jsonConverted[i].Logs[j]);
+                        }
+                    }
+                }
+            }
 
             return 0;
         }

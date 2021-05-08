@@ -246,5 +246,141 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         }
 
 
+        public List<PortHelper> GetExportablePackage()
+        {
+            List<PortHelper> tmpPackageContainer = new List<PortHelper>();
+
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+            string sql1 = $"SELECT * FROM tours";
+            using var cmd1 = new NpgsqlCommand(sql1, con);
+
+            using var tourReader = cmd1.ExecuteReader();
+
+
+            while (tourReader.Read())
+            {
+                string tourName = tourReader.GetString(tourReader.GetOrdinal("tourname"));
+                string tourDescription = tourReader.GetString(tourReader.GetOrdinal("tourdescription"));
+                string routeInformation = tourReader.GetString(tourReader.GetOrdinal("routeinformation"));
+                string tourDistance = tourReader.GetString(tourReader.GetOrdinal("Tourdistance"));
+                string tourFrom = tourReader.GetString(tourReader.GetOrdinal("tourfrom"));
+                string tourTo = tourReader.GetString(tourReader.GetOrdinal("tourTo"));
+                string tourImage = tourReader.GetString(tourReader.GetOrdinal("tourimage"));
+
+                TourEntry tmpTourEntry = new TourEntry(tourName, tourDescription, routeInformation, tourDistance, tourFrom, tourTo, tourImage);
+                List<LogEntry> tmpLogEntries = GetLogsList(tourName);
+
+                tmpPackageContainer.Add(new PortHelper(tmpTourEntry, tmpLogEntries));
+            }
+            con.Close();
+
+            return tmpPackageContainer;
+        }
+
+        public List<LogEntry> GetLogsList(string tourName)
+        {
+            List<LogEntry> tmpLogContainer = new List<LogEntry>();
+
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+            string sql1 = $"SELECT * FROM logs WHERE tourname = '{tourName}'";
+            using var cmd1 = new NpgsqlCommand(sql1, con);
+
+            using var reader = cmd1.ExecuteReader();
+
+
+            while (reader.Read())
+            {
+                DateTime logDate = DateTime.Parse(reader.GetString(reader.GetOrdinal("logdate")));
+                int totalTime = reader.GetInt32(reader.GetOrdinal("totaltime"));
+                int distance = reader.GetInt32(reader.GetOrdinal("distance"));
+                int elevation = reader.GetInt32(reader.GetOrdinal("elevation"));
+                string avgSpeed = reader.GetString(reader.GetOrdinal("avgspeed"));
+                int bmp = reader.GetInt32(reader.GetOrdinal("bpm"));
+                string rating = reader.GetString(reader.GetOrdinal("rating"));
+                string report = reader.GetString(reader.GetOrdinal("report"));
+                string usedSupplies = reader.GetString(reader.GetOrdinal("usedsupplies"));
+                string tourmates = reader.GetString(reader.GetOrdinal("tourmates"));
+
+                tmpLogContainer.Add(new LogEntry(tourName, logDate, totalTime,
+                    distance, elevation, avgSpeed, bmp, rating, report,
+                    usedSupplies, tourmates));
+            }
+            con.Close();
+
+            return tmpLogContainer;
+        }
+
+        public int DoesTourAlreadyExist(string tourName)
+        {
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+
+            string sql1 = $"SELECT Count(*) FROM tours WHERE tourname = '{tourName}'";
+            using var cmd1 = new NpgsqlCommand(sql1, con);
+
+            long exi = (long)cmd1.ExecuteScalar();
+
+            if (exi != 0) return -1;
+            return 0;
+        }
+
+        public int DoesLogAlreadyExist(string tourName, DateTime logDate)
+        {
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+
+            string sql1 = $"SELECT Count(*) FROM logs WHERE tourname = '{tourName}' AND logdate = '{logDate}'";
+            using var cmd1 = new NpgsqlCommand(sql1, con);
+
+            long exi = (long)cmd1.ExecuteScalar();
+
+            if (exi != 0) return -1;
+            return 0;
+        }
+
+        public int ImportTourToDb(TourEntry tour)
+        {
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+            using var cmd = new NpgsqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = $"INSERT INTO tours (tourname, tourdescription, routeinformation, tourdistance, tourfrom, tourto, tourimage) " +
+                              $"VALUES ('{tour.TourName}','{tour.TourDescription}','{tour.RouteInformation}','{tour.TourDistance}','{tour.TourFrom}','{tour.TourTo}','{tour.TourImage}')";
+            var status = cmd.ExecuteNonQuery();
+
+            if (status < 0)
+            {
+                MessageBox.Show($"ImportTourToDb -> An Error occurred, Error Code: '{status}'");
+            }
+
+            return status;
+        }
+
+        public int ImportLogToTour(LogEntry logEntry)
+        {
+            using var con = new NpgsqlConnection(DatabaseSource);
+            con.Open();
+
+            using var cmd = new NpgsqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = $"INSERT INTO logs (tourname, logdate, totaltime, distance, elevation, avgspeed, bpm, rating, report, usedsupplies, tourmates) " +
+                              $"VALUES ('{logEntry.TourName}', '{logEntry.LogDate}', {logEntry.TotalTime},{logEntry.Distance}, {logEntry.Elevation}, '{logEntry.AvgSpeed}'," +
+                              $"{logEntry.BPM}, '{logEntry.Rating}', '{logEntry.Report}', '{logEntry.UsedSupplies}', '{logEntry.Tourmates}')";
+            var status = cmd.ExecuteNonQuery();
+
+            if (status < 0)
+            {
+                MessageBox.Show($"ImportLogToTour -> An Error occurred, Error Code: '{status}'");
+            }
+
+            return status;
+        }
     }
 }

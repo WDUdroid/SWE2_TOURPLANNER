@@ -12,10 +12,20 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="1*" />
             <RowDefinition Height="11*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <DockPanel Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <MenuItem Header="Export tours as PDF (WIP)" Command="{Binding ExportToursAsPDFCommand}" />
+                    <MenuItem Header="Export tours as JSON" Command="{Binding ExportToursAsJSONCommand}" />
+                    <MenuItem Header="Import tours" Command="{Binding ImportToursCommand}" />
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -31,7 +41,7 @@
             </Grid>
             <Label Grid.Column="2" Content="{Binding CurrentData[0].TourName}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" FontSize="18" MaxWidth="300"/>
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="300" />
                 <ColumnDefinition Width="3*" />

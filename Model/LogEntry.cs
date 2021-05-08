@@ -20,23 +20,23 @@ namespace SWE2_TOURPLANNER.Model
         private string _usedSupplies;
         private string _tourmates;
 
-        public LogEntry(string tourName, int totalTime, int distance,
-                        int elevation, string avgSpeed, int bpm, string rating,
-                        string report, string usedSupplies, string tourmates)
-        {
-            DateTime logDate = DateTime.Now;
-            this._tourName = tourName;
-            this._logDate = logDate;
-            this._totalTime = totalTime;
-            this._distance = distance;
-            this._elevation = elevation;
-            this._avgSpeed = avgSpeed;
-            this._bpm = bpm;
-            this._rating = rating;
-            this._report = report;
-            this._usedSupplies = usedSupplies;
-            this._tourmates = tourmates;
-        }
+        //public LogEntry(string tourName, int totalTime, int distance,
+        //                int elevation, string avgSpeed, int bpm, string rating,
+        //                string report, string usedSupplies, string tourmates)
+        //{
+        //    DateTime logDate = DateTime.Now;
+        //    this._tourName = tourName;
+        //    this._logDate = logDate;
+        //    this._totalTime = totalTime;
+        //    this._distance = distance;
+        //    this._elevation = elevation;
+        //    this._avgSpeed = avgSpeed;
+        //    this._bpm = bpm;
+        //    this._rating = rating;
+        //    this._report = report;
+        //    this._usedSupplies = usedSupplies;
+        //    this._tourmates = tourmates;
+        //}
 
         public LogEntry(string tourName, DateTime logDate, int totalTime, int distance,
             int elevation, string avgSpeed, int bpm, string rating,

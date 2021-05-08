@@ -262,6 +262,10 @@ namespace SWE2_TOURPLANNER
         public RelayCommand AddLogCommand { get; }
         public RelayCommand DeleteLogCommand { get; }
 
+        public RelayCommand ExportToursAsPDFCommand { get; }
+        public RelayCommand ExportToursAsJSONCommand { get; }
+        public RelayCommand ImportToursCommand { get; }
+
 
         public MainViewModel()
         {
@@ -279,11 +283,11 @@ namespace SWE2_TOURPLANNER
             AddTourCommand = new RelayCommand((_) =>
             {
                 string tmpImageString = _businessLayer.GetImage(this.TourFrom, this.TourTo);
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation, 
+                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
                                             this.TourDistance, this.TourFrom, this.TourTo, tmpImageString));
 
                 //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation, 
+                _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation,
                                         this.TourDistance, this.TourFrom, this.TourTo, tmpImageString);
 
                 SearchText = "";
@@ -355,6 +359,27 @@ namespace SWE2_TOURPLANNER
                 }
             });
 
+            ExportToursAsPDFCommand = new RelayCommand((_) =>
+            {
+                _businessLayer.ExportToursAsPDF();
+            });
+
+            ExportToursAsJSONCommand = new RelayCommand((_) =>
+            {
+                _businessLayer.ExportToursAsJSON();
+            });
+
+            ImportToursCommand = new RelayCommand((_) =>
+            {
+                _businessLayer.ImportTours();
+                Data.Clear();
+                foreach (var item in _businessLayer.GetAllTours())
+                {
+                    Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
+                        item.TourDistance, item.TourFrom, item.TourTo, item.TourImage));
+                }
+            });
+
 
         }
 
@@ -400,7 +425,7 @@ namespace SWE2_TOURPLANNER
             {
                 CurrentlySelectedLog = selectedLogEntry.LogDate;
                 CurrentLog.Clear();
-                CurrentLog.Add(new LogEntry(selectedLogEntry.TourName, selectedLogEntry.LogDate, 
+                CurrentLog.Add(new LogEntry(selectedLogEntry.TourName, selectedLogEntry.LogDate,
                                                 selectedLogEntry.TotalTime, selectedLogEntry.Distance, selectedLogEntry.Elevation,
                                                 selectedLogEntry.AvgSpeed, selectedLogEntry.BPM, selectedLogEntry.Rating, selectedLogEntry.Report,
                                                 selectedLogEntry.UsedSupplies, selectedLogEntry.Tourmates));
