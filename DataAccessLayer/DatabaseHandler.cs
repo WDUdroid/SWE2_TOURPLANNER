@@ -16,16 +16,13 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 {
     public class DatabaseHandler
     {
-        private static DatabaseHandler instance = new DatabaseHandler();
 
         private string DatabaseSource;
 
-        private DatabaseHandler()
+        public DatabaseHandler(string database)
         {
-            DatabaseSource = ConfigFetcher.Instance.DatabaseSource;
+            DatabaseSource = database;
         }
-
-        public static DatabaseHandler Instance => instance;
 
         public ObservableCollection<LogEntry> GetLogsOfTour(string tourName)
         {

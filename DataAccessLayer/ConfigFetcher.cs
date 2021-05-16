@@ -11,13 +11,11 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 {
     public class ConfigFetcher
     {
-        private static ConfigFetcher instance = new ConfigFetcher();
-
         public string DatabaseSource;
         public string ImageSource;
         public string MapQuestKey;
 
-        private ConfigFetcher()
+        public ConfigFetcher()
         {
             string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
             string configFileLocation = projectDirectory + @"\Config\config.json";
@@ -47,9 +45,5 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             //MessageBox.Show(ImageSource);
             //MessageBox.Show(MapQuestKey);
         }
-
-        public static ConfigFetcher Instance => instance;
-
-
     }
 }

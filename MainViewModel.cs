@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using SWE2_TOURPLANNER.Annotations;
 using SWE2_TOURPLANNER.DataAccessLayer;
@@ -283,11 +284,6 @@ namespace SWE2_TOURPLANNER
 
         public MainViewModel()
         {
-            ConfigFetcher configFetcher = ConfigFetcher.Instance;
-            MapQuest GetMap = MapQuest.Instance;
-
-            DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-
             foreach (var item in _businessLayer.GetAllTours())
             {
                 Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
@@ -296,65 +292,84 @@ namespace SWE2_TOURPLANNER
 
             AddTourCommand = new RelayCommand((_) =>
             {
-                MapQuestDataHelper tmpDC = _businessLayer.GetMapQuestInfo(this.TourFrom, this.TourTo, this.RouteType);
+                if (this.TourName == null || this.TourDescription == null ||
+                    this.RouteInformation == null || this.Distance == null ||
+                    this.TourFrom == null || this.TourTo == null)
+                {
+                    MessageBox.Show("Please fill out all boxes!");
+                }
 
-                this.RouteInformation = $"Tour length: {tmpDC.Distance}\r\n" +
-                                        $"Approx. time to complete: {tmpDC.ApproxTime}\r\n" +
-                                        $"Tolls: {tmpDC.HasTollRoad}\r\n" +
-                                        $"Bridges: {tmpDC.HasBridge}\r\n" +
-                                        $"Ferries: {tmpDC.HasFerry}\r\n" +
-                                        $"Highways: {tmpDC.HasHighway}\r\n" +
-                                        $"Tunnels: {tmpDC.HasTunnel}\r\n" +
-                                        $"Used sessionID: {tmpDC.SessionId}";
+                else
+                {
+                    MapQuestDataHelper tmpDC = _businessLayer.GetMapQuestInfo(this.TourFrom, this.TourTo, this.RouteType);
 
-                Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
-                                            tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage));
+                    this.RouteInformation = $"Tour length: {tmpDC.Distance}\r\n" +
+                                            $"Approx. time to complete: {tmpDC.ApproxTime}\r\n" +
+                                            $"Tolls: {tmpDC.HasTollRoad}\r\n" +
+                                            $"Bridges: {tmpDC.HasBridge}\r\n" +
+                                            $"Ferries: {tmpDC.HasFerry}\r\n" +
+                                            $"Highways: {tmpDC.HasHighway}\r\n" +
+                                            $"Tunnels: {tmpDC.HasTunnel}\r\n" +
+                                            $"Used sessionID: {tmpDC.SessionId}";
 
-                _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation,
-                                        tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage);
+                    Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
+                        tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage));
 
-                SearchText = "";
+                    _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation,
+                        tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage);
 
-                TourName = String.Empty;
-                TourDescription = string.Empty;
-                RouteInformation = string.Empty;
-                TourDistance = string.Empty;
-                RouteType = "fastest";
-                TourFrom = string.Empty;
-                TourTo = string.Empty;
+                    SearchText = "";
+
+                    TourName = string.Empty;
+                    TourDescription = string.Empty;
+                    RouteInformation = string.Empty;
+                    TourDistance = string.Empty;
+                    RouteType = "fastest";
+                    TourFrom = string.Empty;
+                    TourTo = string.Empty;
+                }
             });
 
             AddLogCommand = new RelayCommand((_) =>
             {
-                if (CurrentlySelectedTour != null)
+                if (this.TotalTime == null || this.Distance == null ||
+                    this.Elevation == null || this.AvgSpeed == null ||
+                    this.BPM == null || this.Report == null || this.UsedSupplies == null || this.Tourmates == null)
                 {
-                    var tmpLogDate = DateTime.Now;
-
-                    CurrentTourLogs.Add(new LogEntry(CurrentlySelectedTour, tmpLogDate,
-                        int.Parse(this.TotalTime), int.Parse(this.Distance),
-                        int.Parse(this.Elevation), this.AvgSpeed,
-                        int.Parse(this.BPM), this.Rating, this.Report,
-                        this.UsedSupplies, this.Tourmates));
-
-                    //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                    _businessLayer.AddLog(CurrentlySelectedTour, tmpLogDate,
-                        this.TotalTime, this.Distance,
-                        this.Elevation, this.AvgSpeed,
-                        this.BPM, this.Rating, this.Report,
-                        this.UsedSupplies, this.Tourmates);
+                    MessageBox.Show("Please fill out all boxes!");
                 }
+                else
+                {
+
+                    if (CurrentlySelectedTour != null)
+                    {
+                        var tmpLogDate = DateTime.Now;
+
+                        CurrentTourLogs.Add(new LogEntry(CurrentlySelectedTour, tmpLogDate,
+                            int.Parse(this.TotalTime), int.Parse(this.Distance),
+                            int.Parse(this.Elevation), this.AvgSpeed,
+                            int.Parse(this.BPM), this.Rating, this.Report,
+                            this.UsedSupplies, this.Tourmates));
+
+                        //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                        _businessLayer.AddLog(CurrentlySelectedTour, tmpLogDate,
+                            this.TotalTime, this.Distance,
+                            this.Elevation, this.AvgSpeed,
+                            this.BPM, this.Rating, this.Report,
+                            this.UsedSupplies, this.Tourmates);
 
 
-                TotalTime = string.Empty;
-                Distance = string.Empty;
-                Elevation = string.Empty;
-                AvgSpeed = string.Empty;
-                BPM = string.Empty;
-                Rating = string.Empty;
-                Report = string.Empty;
-                UsedSupplies = string.Empty;
-                Tourmates = string.Empty;
 
+                        TotalTime = string.Empty;
+                        Distance = string.Empty;
+                        Elevation = string.Empty;
+                        AvgSpeed = string.Empty;
+                        BPM = string.Empty;
+                        Report = string.Empty;
+                        UsedSupplies = string.Empty;
+                        Tourmates = string.Empty;
+                    }
+                }
             });
 
             DeleteLogCommand = new RelayCommand((_) =>
@@ -379,18 +394,25 @@ namespace SWE2_TOURPLANNER
                     //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                     _businessLayer.DeleteTour(CurrentlySelectedTour);
                     CurrentData.Clear();
+                    CurrentTourLogs.Clear();
                     Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
                 }
             });
 
-            ExportTourAsPDFCommand = new RelayCommand((_) =>
+            ExportTourAsPDFCommand = new RelayCommand(async (_) =>
             {
-                _businessLayer.ExportTourAsPDF(CurrentlySelectedTour);
+                if (CurrentlySelectedTour != null)
+                {
+                    await _businessLayer.ExportTourAsPDF(CurrentlySelectedTour);
+                }
             });
 
             ExportToursAsJSONCommand = new RelayCommand((_) =>
             {
-                _businessLayer.ExportToursAsJSON();
+                if (CurrentlySelectedTour != null)
+                {
+                    _businessLayer.ExportToursAsJSON();
+                }
             });
 
             ImportToursCommand = new RelayCommand((_) =>

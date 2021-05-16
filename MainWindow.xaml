@@ -37,7 +37,7 @@
                     <ColumnDefinition Width="*" MinWidth="100" MaxWidth="100" />
                 </Grid.ColumnDefinitions>
                 <Label Content="Search:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" />
-                <TextBox Name="SearchBox" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5"/>
+                <TextBox Name="SearchBox" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5" MaxLength="100"/>
             </Grid>
             <Label Grid.Column="2" Content="{Binding CurrentData[0].TourName}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" FontSize="18" MaxWidth="300"/>
         </Grid>
@@ -110,7 +110,7 @@
                     <Grid Background="#ffffff">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -119,13 +119,13 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" Content="From: "></Label>
-                        <Label Grid.Column="1" Grid.Row="0" Content="{Binding CurrentData[0].TourFrom}"></Label>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding CurrentData[0].TourFrom}" TextWrapping="Wrap" Margin="5"/>
                         <Label Grid.Column="0" Grid.Row="1" Content="To: "></Label>
-                        <Label Grid.Column="1" Grid.Row="1" Content="{Binding CurrentData[0].TourTo}"></Label>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding CurrentData[0].TourTo}" TextWrapping="Wrap" Margin="5"/>
                         <Label Grid.Column="0" Grid.Row="2" Content="Route Information: "></Label>
-                        <Label Grid.Column="1" Grid.Row="2" Content="{Binding CurrentData[0].RouteInformation}"></Label>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding CurrentData[0].RouteInformation}" TextWrapping="Wrap" Margin="5"/>
                         <Label Grid.Column="0" Grid.Row="3" Content="Tour Description: "></Label>
-                        <Label Grid.Column="1" Grid.Row="3" Content="{Binding CurrentData[0].TourDescription}"></Label>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding CurrentData[0].TourDescription}" TextWrapping="Wrap" Margin="5"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Logs" Margin="0">
@@ -204,15 +204,15 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Label Grid.Row="0" Content="Total Time:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="1" PreviewTextInput="NumberValidationTextBox" Text="{Binding TotalTime}" Margin="5,1,5,1"></TextBox>
-                                    <Label Grid.Row="2" Content="Distance in m:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="3" PreviewTextInput="NumberValidationTextBox" Text="{Binding Distance}" Margin="5,1,5,1"></TextBox>
+                                    <TextBox Grid.Row="1" PreviewTextInput="NumberValidationTextBox" Text="{Binding TotalTime}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="2" Content="Distance in m:" VerticalContentAlignment="Bottom"/>
+                                    <TextBox Grid.Row="3" PreviewTextInput="NumberValidationTextBox" Text="{Binding Distance}" Margin="5,1,5,1" MaxLength="9"></TextBox>
                                     <Label Grid.Row="4" Content="Elevation in m:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="5" PreviewTextInput="NumberValidationTextBox" Text="{Binding Elevation}" Margin="5,1,5,1"></TextBox>
+                                    <TextBox Grid.Row="5" PreviewTextInput="NumberValidationTextBox" Text="{Binding Elevation}" Margin="5,1,5,1" MaxLength="9"></TextBox>
                                     <Label Grid.Row="6" Content="Average Speed in m/h:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="7" PreviewTextInput="NumberValidationTextBox" Text="{Binding AvgSpeed}" Margin="5,1,5,1"></TextBox>
+                                    <TextBox Grid.Row="7" PreviewTextInput="NumberValidationTextBox" Text="{Binding AvgSpeed}" Margin="5,1,5,1" MaxLength="9"></TextBox>
                                     <Label Grid.Row="8" Content="Heartbeats per minute:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="9" PreviewTextInput="NumberValidationTextBox" Text="{Binding BPM}" Margin="5,1,5,1"></TextBox>
+                                    <TextBox Grid.Row="9" PreviewTextInput="NumberValidationTextBox" Text="{Binding BPM}" Margin="5,1,5,1" MaxLength="9"></TextBox>
                                     <Label Grid.Row="10" Content="Rating:" VerticalContentAlignment="Bottom" />
                                     <ComboBox Grid.Row="11" Text="{Binding Rating}" Margin="5,1,5,1">
                                         <ComboBoxItem IsSelected="True">1</ComboBoxItem>

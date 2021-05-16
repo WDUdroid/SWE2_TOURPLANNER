@@ -16,20 +16,18 @@ namespace SWE2_TOURPLANNER.Services
 {
     public class MapQuest
     {
-        private static MapQuest instance = new MapQuest();
-
         private readonly string BaseURL = "https://www.mapquestapi.com";
         private string ApiKey;
+        private string ImageSource;
 
         private HttpClient Client;
 
-        private ConfigFetcher Config;
 
 
-        private MapQuest()
+        public MapQuest(string key, string imageSource)
         {
-            Config = ConfigFetcher.Instance;
-            ApiKey = Config.MapQuestKey;
+            ApiKey = key;
+            ImageSource = imageSource;
 
             Client = new HttpClient();
         }
@@ -42,8 +40,6 @@ namespace SWE2_TOURPLANNER.Services
             //var rawResponse = await Client.GetAsync(BaseURL + "/directions/v2/route?key=" + ApiKey + "&from=" + @from + "&to=" + to + "&routeType=" + routeType);
             var stringJsonResponse = task.Result.Content.ReadAsStringAsync().Result;
 
-            MessageBox.Show(stringJsonResponse);
-
             JObject jSonResponse = JObject.Parse(stringJsonResponse);
 
             var hasToll = (string)jSonResponse["route"]?["hasTollRoad"];
@@ -54,7 +50,7 @@ namespace SWE2_TOURPLANNER.Services
             var approxTime = (string)jSonResponse["route"]?["formattedTime"];
             var distance = (string)jSonResponse["route"]?["distance"];
             var sessionId = (string)jSonResponse["route"]?["sessionId"];
-            MessageBox.Show(sessionId);
+
             var imageDir = LoadImage(sessionId);
 
             var mapQuestDataHelper = new MapQuestDataHelper(hasToll, hasBridge, hasTunnel, hasHighway, hasFerry, approxTime, distance, sessionId, imageDir);
@@ -73,7 +69,7 @@ namespace SWE2_TOURPLANNER.Services
             var imageName = Convert.ToString(rand.Next(999999999));
             imageName += ".jpg";
 
-            while (File.Exists(Config.ImageSource + @"\" + imageName) == true)
+            while (File.Exists(ImageSource + @"\" + imageName) == true)
             {
                 imageName = Convert.ToString(rand.Next(999999999));
                 imageName += ".jpg";
@@ -85,15 +81,14 @@ namespace SWE2_TOURPLANNER.Services
                 using (BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()))
                 {
                     Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
-                    //File.Create(Config.ImageSource+@"\test.jpg").Close();
-                    using (FileStream fs = File.Create(Config.ImageSource + @"\" + imageName))
+                    using (FileStream fs = File.Create(ImageSource + @"\" + imageName))
                     {
                         fs.Write(lnByte, 0, lnByte.Length);
                     }
                 }
             }
 
-            return Config.ImageSource + @"\" + imageName;
+            return ImageSource + @"\" + imageName;
         }
 
         public string GetImage(string from, string to)
@@ -107,7 +102,7 @@ namespace SWE2_TOURPLANNER.Services
             var imageName = Convert.ToString(rand.Next(999999999));
             imageName += ".jpg";
 
-            while (File.Exists(Config.ImageSource + @"\" + imageName) == true)
+            while (File.Exists(ImageSource + @"\" + imageName) == true)
             {
                 imageName = Convert.ToString(rand.Next(999999999));
                 imageName += ".jpg";
@@ -119,18 +114,14 @@ namespace SWE2_TOURPLANNER.Services
                 using (BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()))
                 {
                     Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
-                    //File.Create(Config.ImageSource+@"\test.jpg").Close();
-                    using (FileStream fs = File.Create(Config.ImageSource + @"\" + imageName))
+                    using (FileStream fs = File.Create(ImageSource + @"\" + imageName))
                     {
                         fs.Write(lnByte, 0, lnByte.Length);
                     }
                 }
             }
 
-            return Config.ImageSource + @"\" + imageName;
+            return ImageSource + @"\" + imageName;
         }
-
-
-        public static MapQuest Instance => instance;
     }
 }
