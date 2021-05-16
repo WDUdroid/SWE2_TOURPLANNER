@@ -17,7 +17,7 @@ namespace SWE2_TOURPLANNER
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private BusinessLayer _businessLayer = BusinessLayer.Instance;
+        private readonly BusinessLayer _businessLayer = BusinessLayer.Instance;
 
         public static ObservableCollection<TourEntry> Data { get; }
             = new ObservableCollection<TourEntry>();
@@ -301,22 +301,22 @@ namespace SWE2_TOURPLANNER
 
                 else
                 {
-                    MapQuestDataHelper tmpDC = _businessLayer.GetMapQuestInfo(this.TourFrom, this.TourTo, this.RouteType);
+                    MapQuestDataHelper tmpDc = _businessLayer.GetMapQuestInfo(this.TourFrom, this.TourTo, this.RouteType);
 
-                    this.RouteInformation = $"Tour length: {tmpDC.Distance}\r\n" +
-                                            $"Approx. time to complete: {tmpDC.ApproxTime}\r\n" +
-                                            $"Tolls: {tmpDC.HasTollRoad}\r\n" +
-                                            $"Bridges: {tmpDC.HasBridge}\r\n" +
-                                            $"Ferries: {tmpDC.HasFerry}\r\n" +
-                                            $"Highways: {tmpDC.HasHighway}\r\n" +
-                                            $"Tunnels: {tmpDC.HasTunnel}\r\n" +
-                                            $"Used sessionID: {tmpDC.SessionId}";
+                    this.RouteInformation = $"Tour length: {tmpDc.Distance}\r\n" +
+                                            $"Approx. time to complete: {tmpDc.ApproxTime}\r\n" +
+                                            $"Tolls: {tmpDc.HasTollRoad}\r\n" +
+                                            $"Bridges: {tmpDc.HasBridge}\r\n" +
+                                            $"Ferries: {tmpDc.HasFerry}\r\n" +
+                                            $"Highways: {tmpDc.HasHighway}\r\n" +
+                                            $"Tunnels: {tmpDc.HasTunnel}\r\n" +
+                                            $"Used sessionID: {tmpDc.SessionId}";
 
                     Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
-                        tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage));
+                        tmpDc.Distance, this.TourFrom, this.TourTo, tmpDc.TourImage));
 
                     _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation,
-                        tmpDC.Distance, this.TourFrom, this.TourTo, tmpDC.TourImage);
+                        tmpDc.Distance, this.TourFrom, this.TourTo, tmpDc.TourImage);
 
                     SearchText = "";
 
@@ -403,7 +403,7 @@ namespace SWE2_TOURPLANNER
             {
                 if (CurrentlySelectedTour != null)
                 {
-                    await _businessLayer.ExportTourAsPDF(CurrentlySelectedTour);
+                    _businessLayer.ExportTourAsPdf(CurrentlySelectedTour);
                 }
             });
 
@@ -411,7 +411,7 @@ namespace SWE2_TOURPLANNER
             {
                 if (CurrentlySelectedTour != null)
                 {
-                    _businessLayer.ExportToursAsJSON();
+                    _businessLayer.ExportToursAsJson();
                 }
             });
 

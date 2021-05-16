@@ -17,18 +17,18 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
     public class DatabaseHandler
     {
 
-        private string DatabaseSource;
+        private readonly string _databaseSource;
 
         public DatabaseHandler(string database)
         {
-            DatabaseSource = database;
+            _databaseSource = database;
         }
 
         public ObservableCollection<LogEntry> GetLogsOfTour(string tourName)
         {
             ObservableCollection<LogEntry> tmpLogContainer = new ObservableCollection<LogEntry>();
 
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
             string sql1 = $"SELECT * FROM logs WHERE tourname = '{tourName}'";
@@ -63,7 +63,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         {
             ObservableCollection<TourEntry> tmpLogContainer = new ObservableCollection<TourEntry>();
 
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
             string sql1 = $"SELECT * FROM tours";
@@ -93,14 +93,17 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             int elevation, string avgSpeed, int bpm, string rating,
             string report, string usedSupplies, string tourmates)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"INSERT INTO logs (tourname, logdate, totaltime, distance, elevation, avgspeed, bpm, rating, report, usedsupplies, tourmates) " +
-                              $"VALUES ('{tourName}', '{logDate}', {totalTime},{distance}, {elevation}, '{avgSpeed}'," +
-                              $"{bpm}, '{rating}', '{report}', '{usedSupplies}', '{tourmates}')";
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText =
+                    $"INSERT INTO logs (tourname, logdate, totaltime, distance, elevation, avgspeed, bpm, rating, report, usedsupplies, tourmates) " +
+                    $"VALUES ('{tourName}', '{logDate}', {totalTime},{distance}, {elevation}, '{avgSpeed}'," +
+                    $"{bpm}, '{rating}', '{report}', '{usedSupplies}', '{tourmates}')"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)
@@ -114,13 +117,16 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         public int AddTourToDb(string tourName, string tourDescription, string routeInformation, 
                                 string tourDistance, string tourFrom, string tourTo, string tourImage)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"INSERT INTO tours (tourname, tourdescription, routeinformation, tourdistance, tourfrom, tourto, tourimage) " +
-                              $"VALUES ('{tourName}','{tourDescription}','{routeInformation}','{tourDistance}','{tourFrom}','{tourTo}','{tourImage}')";
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText =
+                    $"INSERT INTO tours (tourname, tourdescription, routeinformation, tourdistance, tourfrom, tourto, tourimage) " +
+                    $"VALUES ('{tourName}','{tourDescription}','{routeInformation}','{tourDistance}','{tourFrom}','{tourTo}','{tourImage}')"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)
@@ -135,15 +141,17 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             int elevation, string avgSpeed, int bpm, string rating,
             string report, string usedSupplies, string tourmates)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"DELETE FROM logs WHERE " +
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText = $"DELETE FROM logs WHERE " +
                               $"tourname = '{tourName}' AND logdate = '{logDate.ToString()}' AND totaltime = {totalTime} AND distance ={distance} AND " +
                               $"elevation = {elevation} AND avgspeed = '{avgSpeed}' AND " +
-                              $"bpm = {bpm} AND rating = '{rating}' AND report = '{report}' AND usedsupplies = '{usedSupplies}' AND tourmates = '{tourmates}'";
+                              $"bpm = {bpm} AND rating = '{rating}' AND report = '{report}' AND usedsupplies = '{usedSupplies}' AND tourmates = '{tourmates}'"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)
@@ -156,13 +164,15 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public int DeleteTourFromDb(string tourName)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"DELETE FROM tours WHERE " +
-                              $"tourname = '{tourName}'";
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText = $"DELETE FROM tours WHERE " +
+                              $"tourname = '{tourName}'"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)
@@ -175,13 +185,15 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public int DeleteAllLogsFromTour(string tourName)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"DELETE FROM logs WHERE " +
-                              $"tourname = '{tourName}'";
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText = $"DELETE FROM logs WHERE " +
+                              $"tourname = '{tourName}'"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)
@@ -201,7 +213,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
             ObservableCollection<TourEntry> tmpLogContainer = new ObservableCollection<TourEntry>();
 
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
             string sql1 = $"SELECT * FROM tours FULL JOIN logs ON tours.tourname = logs.tourname WHERE " +
@@ -247,7 +259,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         {
             List<PortHelper> tmpPackageContainer = new List<PortHelper>();
 
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
             string sql1 = $"SELECT * FROM tours";
@@ -280,7 +292,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         {
             List<LogEntry> tmpLogContainer = new List<LogEntry>();
 
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
             string sql1 = $"SELECT * FROM logs WHERE tourname = '{tourName}'";
@@ -315,7 +327,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         {
             TourEntry tmpTourContainer = null;
 
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
             string sql1 = $"SELECT * FROM tours WHERE tourname = '{tourName}'";
@@ -343,7 +355,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public int DoesTourAlreadyExist(string tourName)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
 
@@ -358,7 +370,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public int DoesLogAlreadyExist(string tourName, DateTime logDate)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
 
@@ -373,13 +385,16 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public int ImportTourToDb(TourEntry tour)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"INSERT INTO tours (tourname, tourdescription, routeinformation, tourdistance, tourfrom, tourto, tourimage) " +
-                              $"VALUES ('{tour.TourName}','{tour.TourDescription}','{tour.RouteInformation}','{tour.TourDistance}','{tour.TourFrom}','{tour.TourTo}','{tour.TourImage}')";
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText =
+                    $"INSERT INTO tours (tourname, tourdescription, routeinformation, tourdistance, tourfrom, tourto, tourimage) " +
+                    $"VALUES ('{tour.TourName}','{tour.TourDescription}','{tour.RouteInformation}','{tour.TourDistance}','{tour.TourFrom}','{tour.TourTo}','{tour.TourImage}')"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)
@@ -392,14 +407,17 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public int ImportLogToTour(LogEntry logEntry)
         {
-            using var con = new NpgsqlConnection(DatabaseSource);
+            using var con = new NpgsqlConnection(_databaseSource);
             con.Open();
 
-            using var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = $"INSERT INTO logs (tourname, logdate, totaltime, distance, elevation, avgspeed, bpm, rating, report, usedsupplies, tourmates) " +
-                              $"VALUES ('{logEntry.TourName}', '{logEntry.LogDate}', {logEntry.TotalTime},{logEntry.Distance}, {logEntry.Elevation}, '{logEntry.AvgSpeed}'," +
-                              $"{logEntry.BPM}, '{logEntry.Rating}', '{logEntry.Report}', '{logEntry.UsedSupplies}', '{logEntry.Tourmates}')";
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText =
+                    $"INSERT INTO logs (tourname, logdate, totaltime, distance, elevation, avgspeed, bpm, rating, report, usedsupplies, tourmates) " +
+                    $"VALUES ('{logEntry.TourName}', '{logEntry.LogDate}', {logEntry.TotalTime},{logEntry.Distance}, {logEntry.Elevation}, '{logEntry.AvgSpeed}'," +
+                    $"{logEntry.BPM}, '{logEntry.Rating}', '{logEntry.Report}', '{logEntry.UsedSupplies}', '{logEntry.Tourmates}')"
+            };
             var status = cmd.ExecuteNonQuery();
 
             if (status < 0)

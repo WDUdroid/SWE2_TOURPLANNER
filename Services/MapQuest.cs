@@ -17,24 +17,24 @@ namespace SWE2_TOURPLANNER.Services
     public class MapQuest
     {
         private readonly string BaseURL = "https://www.mapquestapi.com";
-        private string ApiKey;
-        private string ImageSource;
+        private readonly string _apiKey;
+        private readonly string _imageSource;
 
-        private HttpClient Client;
+        private readonly HttpClient _client;
 
 
 
         public MapQuest(string key, string imageSource)
         {
-            ApiKey = key;
-            ImageSource = imageSource;
+            _apiKey = key;
+            _imageSource = imageSource;
 
-            Client = new HttpClient();
+            _client = new HttpClient();
         }
 
         public MapQuestDataHelper GetMapQuestRouteSession(string from, string to, string routeType)
         {
-            var task = Task.Run(() => Client.GetAsync(BaseURL + "/directions/v2/route?key=" + ApiKey + "&from=" +
+            var task = Task.Run(() => _client.GetAsync(BaseURL + "/directions/v2/route?key=" + _apiKey + "&from=" +
                                                       @from + "&to=" + to + "&routeType=" + routeType));
             task.Wait();
             //var rawResponse = await Client.GetAsync(BaseURL + "/directions/v2/route?key=" + ApiKey + "&from=" + @from + "&to=" + to + "&routeType=" + routeType);
@@ -59,7 +59,7 @@ namespace SWE2_TOURPLANNER.Services
 
         public string LoadImage(string sessionId)
         {
-            var url = BaseURL + "/staticmap/v5/map?session=" + sessionId + "&key=" + ApiKey;
+            var url = BaseURL + "/staticmap/v5/map?session=" + sessionId + "&key=" + _apiKey;
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.AutomaticDecompression = DecompressionMethods.GZip;
@@ -69,31 +69,27 @@ namespace SWE2_TOURPLANNER.Services
             var imageName = Convert.ToString(rand.Next(999999999));
             imageName += ".jpg";
 
-            while (File.Exists(ImageSource + @"\" + imageName) == true)
+            while (File.Exists(_imageSource + @"\" + imageName) == true)
             {
                 imageName = Convert.ToString(rand.Next(999999999));
                 imageName += ".jpg";
             }
 
 
-            using (HttpWebResponse lxResponse = (HttpWebResponse)request.GetResponse())
+            using HttpWebResponse lxResponse = (HttpWebResponse)request.GetResponse();
+            using BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream());
+            Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
+            using (FileStream fs = File.Create(_imageSource + @"\" + imageName))
             {
-                using (BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()))
-                {
-                    Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
-                    using (FileStream fs = File.Create(ImageSource + @"\" + imageName))
-                    {
-                        fs.Write(lnByte, 0, lnByte.Length);
-                    }
-                }
+                fs.Write(lnByte, 0, lnByte.Length);
             }
 
-            return ImageSource + @"\" + imageName;
+            return _imageSource + @"\" + imageName;
         }
 
         public string GetImage(string from, string to)
         {
-            var url = BaseURL + "/staticmap/v5/map?key=" + ApiKey + "&start=" + from + "&end=" + to;
+            var url = BaseURL + "/staticmap/v5/map?key=" + _apiKey + "&start=" + from + "&end=" + to;
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.AutomaticDecompression = DecompressionMethods.GZip;
@@ -102,26 +98,20 @@ namespace SWE2_TOURPLANNER.Services
             var imageName = Convert.ToString(rand.Next(999999999));
             imageName += ".jpg";
 
-            while (File.Exists(ImageSource + @"\" + imageName) == true)
+            while (File.Exists(_imageSource + @"\" + imageName) == true)
             {
                 imageName = Convert.ToString(rand.Next(999999999));
                 imageName += ".jpg";
             }
 
 
-            using (HttpWebResponse lxResponse = (HttpWebResponse)request.GetResponse())
-            {
-                using (BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()))
-                {
-                    Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
-                    using (FileStream fs = File.Create(ImageSource + @"\" + imageName))
-                    {
-                        fs.Write(lnByte, 0, lnByte.Length);
-                    }
-                }
-            }
+            using HttpWebResponse lxResponse = (HttpWebResponse)request.GetResponse();
+            using BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream());
+            Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
+            using FileStream fs = File.Create(_imageSource + @"\" + imageName);
+            fs.Write(lnByte, 0, lnByte.Length);
 
-            return ImageSource + @"\" + imageName;
+            return _imageSource + @"\" + imageName;
         }
     }
 }

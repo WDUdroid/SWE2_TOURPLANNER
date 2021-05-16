@@ -14,12 +14,14 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public string SaveFileDialogFunc()
         {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.InitialDirectory = @"C:\";
-            saveFileDialog1.Title = "Save text Files";
-            saveFileDialog1.DefaultExt = "json";
-            saveFileDialog1.Filter = "All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 1;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog
+            {
+                InitialDirectory = @"C:\",
+                Title = "Save text Files",
+                DefaultExt = "json",
+                Filter = "All files (*.*)|*.*",
+                FilterIndex = 1
+            };
             saveFileDialog1.ShowDialog();
 
             return saveFileDialog1.FileName;
@@ -27,14 +29,13 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public string OpenFileDialogFunc()
         {
-            var fileContent = string.Empty;
-            var filePath = string.Empty;
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = "c:\\";
-            openFileDialog.Filter = "Json files (*.json)|*.json";
-            openFileDialog.FilterIndex = 2;
-            openFileDialog.RestoreDirectory = true;
+            var openFileDialog = new OpenFileDialog
+            {
+                InitialDirectory = "c:\\",
+                Filter = "Json files (*.json)|*.json",
+                FilterIndex = 2,
+                RestoreDirectory = true
+            };
             openFileDialog.ShowDialog();
 
             if (openFileDialog.FileName != string.Empty)
@@ -47,12 +48,14 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public string SavePdfDialogFunc()
         {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.InitialDirectory = @"C:\";
-            saveFileDialog1.Title = "Save text Files";
-            saveFileDialog1.DefaultExt = "pdf";
-            saveFileDialog1.Filter = "All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 1;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog
+            {
+                InitialDirectory = @"C:\",
+                Title = "Save text Files",
+                DefaultExt = "pdf",
+                Filter = "All files (*.*)|*.*",
+                FilterIndex = 1
+            };
             saveFileDialog1.ShowDialog();
 
             return saveFileDialog1.FileName;

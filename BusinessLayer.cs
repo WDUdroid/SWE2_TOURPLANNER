@@ -21,28 +21,28 @@ namespace SWE2_TOURPLANNER
     {
         private static readonly BusinessLayer instance = new BusinessLayer();
 
-        private static log4net.ILog Log = LogHelper.GetLogger();
+        private static log4net.ILog _log = LogHelper.GetLogger();
 
-        private readonly ConfigFetcher Config;
-        private readonly DatabaseHandler Database;
-        private readonly MapQuest Map;
-        private readonly PdfCreater Pdf;
-        private readonly IO iO;
+        private readonly ConfigFetcher _config;
+        private readonly DatabaseHandler _database;
+        private readonly MapQuest _map;
+        private readonly PdfCreater _pdf;
+        private readonly IO _iO;
 
         private BusinessLayer()
         {
-            Config = new ConfigFetcher();
-            Database = new DatabaseHandler(Config.DatabaseSource);
-            Map = new MapQuest(Config.MapQuestKey, Config.ImageSource);
-            Pdf = new PdfCreater();
-            iO = new IO();
+            _config = new ConfigFetcher();
+            _database = new DatabaseHandler(_config.DatabaseSource);
+            _map = new MapQuest(_config.MapQuestKey, _config.ImageSource);
+            _pdf = new PdfCreater();
+            _iO = new IO();
 
             //Log = log4net.LogManager.GetLogger("BusinessLayer.cs");
         }
 
         public MapQuestDataHelper GetMapQuestInfo(string tourFrom, string tourTo, string routeType)
         {
-            return Map.GetMapQuestRouteSession(tourFrom, tourTo, routeType);
+            return _map.GetMapQuestRouteSession(tourFrom, tourTo, routeType);
         }
 
         public void AddTour(string tourName, string tourDescription,
@@ -50,14 +50,14 @@ namespace SWE2_TOURPLANNER
                     string tourFrom, string tourTo, string tourImage)
         {
 
-            Database.AddTourToDb(tourName, tourDescription, routeInformation, tourDistance, tourFrom, tourTo, tourImage);
+            _database.AddTourToDb(tourName, tourDescription, routeInformation, tourDistance, tourFrom, tourTo, tourImage);
         }
 
         public int AddLog(string tourName, DateTime logDate, string totalTime,
             string distance, string elevation, string avgSpeed, string bpm,
             string rating, string report, string usedSupplies, string tourmates)
         {
-            Database.AddLogToTour(tourName, logDate,
+            _database.AddLogToTour(tourName, logDate,
                 int.Parse(totalTime), int.Parse(distance),
                 int.Parse(elevation), avgSpeed,
                 int.Parse(bpm), rating, report,
@@ -70,7 +70,7 @@ namespace SWE2_TOURPLANNER
             string distance, string elevation, string avgSpeed, string bpm,
             string rating, string report, string usedSupplies, string tourmates)
         {
-            Database.DeleteLogFromTour(tourName, logDate,
+            _database.DeleteLogFromTour(tourName, logDate,
                 int.Parse(totalTime), int.Parse(distance),
                 int.Parse(elevation), avgSpeed,
                 int.Parse(bpm), rating, report,
@@ -81,31 +81,31 @@ namespace SWE2_TOURPLANNER
 
         public int DeleteTour(string tourName)
         {
-            Database.DeleteTourFromDb(tourName);
-            Database.DeleteAllLogsFromTour(tourName);
+            _database.DeleteTourFromDb(tourName);
+            _database.DeleteAllLogsFromTour(tourName);
 
             return 0;
         }
 
-        public async Task ExportTourAsPDF(string tourName)
+        public void ExportTourAsPdf(string tourName)
         {
             var fileDialog = new FileDialog();
             string dirToSaveTo = fileDialog.SavePdfDialogFunc();
 
             if (dirToSaveTo != string.Empty)
             {
-                PdfDocument compPdf = Pdf.CreatePdf(Database.GetTour(tourName), Database.GetLogsList(tourName));
-                iO.SavePdf(compPdf, dirToSaveTo);
+                PdfDocument compPdf = _pdf.CreatePdf(_database.GetTour(tourName), _database.GetLogsList(tourName));
+                _iO.SavePdf(compPdf, dirToSaveTo);
             }
         }
 
-        public int ExportToursAsJSON()
+        public int ExportToursAsJson()
         {
             var fileDialog = new FileDialog();
             string dirToSaveTo = fileDialog.SaveFileDialogFunc();
 
 
-            var dataToSave = Database.GetExportablePackage();
+            var dataToSave = _database.GetExportablePackage();
 
             //PortListHelper dataObjectToSave = new PortListHelper(dataToSave);
 
@@ -134,48 +134,48 @@ namespace SWE2_TOURPLANNER
                 return -1;
             }
 
-            string tmpJsonRaw = iO.GetImportJson(fileDir);
+            string tmpJsonRaw = _iO.GetImportJson(fileDir);
             MessageBox.Show(tmpJsonRaw);
 
-            List<PortHelper> jsonConverted = new List<PortHelper>();
-            jsonConverted = JsonConvert.DeserializeObject<List<PortHelper>>(tmpJsonRaw);
+            var jsonConverted = JsonConvert.DeserializeObject<List<PortHelper>>(tmpJsonRaw);
 
-            for (int i = 0; i < jsonConverted.Count; i++)
-            {
-                if (Database.DoesTourAlreadyExist(jsonConverted[i].Tour.TourName) != -1)
+            if (jsonConverted != null)
+                for (int i = 0; i < jsonConverted.Count; i++)
                 {
-                    Database.ImportTourToDb(jsonConverted[i].Tour);
-                }
-
-                if (jsonConverted[i].Logs.Count > 0)
-                {
-                    for (int j = 0; j < jsonConverted[i].Logs.Count; j++)
+                    if (_database.DoesTourAlreadyExist(jsonConverted[i].Tour.TourName) != -1)
                     {
-                        if (Database.DoesLogAlreadyExist(jsonConverted[i].Logs[j].TourName,
-                            jsonConverted[i].Logs[j].LogDate) != -1)
+                        _database.ImportTourToDb(jsonConverted[i].Tour);
+                    }
+
+                    if (jsonConverted[i].Logs.Count > 0)
+                    {
+                        for (int j = 0; j < jsonConverted[i].Logs.Count; j++)
                         {
-                            Database.ImportLogToTour(jsonConverted[i].Logs[j]);
+                            if (_database.DoesLogAlreadyExist(jsonConverted[i].Logs[j].TourName,
+                                jsonConverted[i].Logs[j].LogDate) != -1)
+                            {
+                                _database.ImportLogToTour(jsonConverted[i].Logs[j]);
+                            }
                         }
                     }
                 }
-            }
 
             return 0;
         }
 
         public ObservableCollection<TourEntry> GetAllTours()
         {
-            return Database.GetToursFromDb();
+            return _database.GetToursFromDb();
         }
 
         public ObservableCollection<TourEntry> GetToursContainingString(string searchText)
         {
-            return Database.GetToursContainingString(searchText);
+            return _database.GetToursContainingString(searchText);
         }
 
         public ObservableCollection<LogEntry> GetLogsOfTour(string tourName)
         {
-            return Database.GetLogsOfTour(tourName);
+            return _database.GetLogsOfTour(tourName);
         }
 
         public static BusinessLayer Instance => instance;
