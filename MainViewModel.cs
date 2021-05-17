@@ -622,7 +622,7 @@ namespace SWE2_TOURPLANNER
 
                         MapQuestDataHelper tmpDc = _businessLayer.GetMapQuestInfo(EditTourFrom, EditTourTo, EditRouteType);
 
-                        this.RouteInformation = $"Tour length: {tmpDc.Distance}\r\n" +
+                        this.EditRouteInformation = $"Tour length: {tmpDc.Distance}\r\n" +
                                                 $"Approx. time to complete: {tmpDc.ApproxTime}\r\n" +
                                                 $"Tolls: {tmpDc.HasTollRoad}\r\n" +
                                                 $"Bridges: {tmpDc.HasBridge}\r\n" +
@@ -777,7 +777,6 @@ namespace SWE2_TOURPLANNER
                                                 selectedLogEntry.UsedSupplies, selectedLogEntry.Tourmates);
             }
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -21,7 +21,7 @@ namespace SWE2_TOURPLANNER
     {
         private static readonly BusinessLayer instance = new BusinessLayer();
 
-        private static log4net.ILog _log = LogHelper.GetLogger();
+        private static readonly log4net.ILog _log = LogHelper.GetLogger();
 
         private readonly ConfigFetcher _config;
         private readonly DatabaseHandler _database;
@@ -35,43 +35,67 @@ namespace SWE2_TOURPLANNER
             _database = new DatabaseHandler(_config.DatabaseSource);
             _map = new MapQuest(_config.MapQuestKey, _config.ImageSource);
             _pdf = new PdfCreater();
-            _iO = new IO();
-
-            //Log = log4net.LogManager.GetLogger("BusinessLayer.cs");
+            _iO = new IO(_config.ImageSource);
         }
 
         public int DoesTourExist(string tourName)
         {
+            _log.Info("Entered DoesTourExist");
+
             if (_database.DoesTourAlreadyExist(tourName) != 0)
             {
+                _log.Info("Database.DoesTourAlreadyExist returned -1");
                 return -1;
             }
 
+            _log.Info("Database.DoesTourAlreadyExist returned 0");
             return 0;
         }
 
         public int DoLocationsExist(string tourFrom, string tourTo)
         {
-            if (_map.DoesExist(tourFrom) == -1 ||
-                _map.DoesExist(tourTo) == -1)
+            _log.Info("Entered DoLocationsExist");
+
+            if (_map.DoesLocationExist(tourFrom) == -1 ||
+                _map.DoesLocationExist(tourTo) == -1)
             {
+                _log.Info("MapQuest.DoesLocationExist returned -1");
                 return -1;
             }
 
+            _log.Info("MapQuest.DoesLocationExist returned 0");
             return 0;
         }
 
 
         public MapQuestDataHelper GetMapQuestInfo(string tourFrom, string tourTo, string routeType)
         {
-            return _map.GetMapQuestRouteSession(tourFrom, tourTo, routeType);
+            _log.Info("Entered GetMapQuestInfo");
+            var tmpMapQuestDataHelper = _map.GetMapQuestRouteSession(tourFrom, tourTo, routeType);
+
+            if (tmpMapQuestDataHelper.SessionId != null)
+            {
+
+
+                var availableFileName = _iO.AvailableFileName();
+                var imageBytes = _map.LoadImage(tmpMapQuestDataHelper.SessionId);
+                var savingStatus = _iO.SaveImage(availableFileName, imageBytes);
+
+                tmpMapQuestDataHelper.TourImage = availableFileName;
+
+                return tmpMapQuestDataHelper;
+            }
+
+            _log.Warn("MapQuest did not return SessionID");
+            tmpMapQuestDataHelper.TourImage = _config.ImageSource + "/fail.jpg";
+            return tmpMapQuestDataHelper;
         }
 
         public void AddTour(string tourName, string tourDescription,
                     string routeInformation, string tourDistance,
                     string tourFrom, string tourTo, string tourImage)
         {
-
+            _log.Info("Entered AddTour");
             _database.AddTourToDb(tourName, tourDescription, routeInformation, tourDistance, tourFrom, tourTo, tourImage);
         }
 
@@ -79,6 +103,7 @@ namespace SWE2_TOURPLANNER
             string distance, string elevation, string avgSpeed, string bpm,
             string rating, string report, string usedSupplies, string tourmates)
         {
+            _log.Info("Entered AddLog");
             _database.AddLogToTour(tourName, logDate,
                 int.Parse(totalTime), int.Parse(distance),
                 int.Parse(elevation), avgSpeed,
@@ -92,6 +117,7 @@ namespace SWE2_TOURPLANNER
             string distance, string elevation, string avgSpeed, string bpm,
             string rating, string report, string usedSupplies, string tourmates)
         {
+            _log.Info("Entered DeleteLog");
             _database.DeleteLogFromTour(tourName, logDate,
                 int.Parse(totalTime), int.Parse(distance),
                 int.Parse(elevation), avgSpeed,
@@ -103,6 +129,7 @@ namespace SWE2_TOURPLANNER
 
         public int DeleteTour(string tourName)
         {
+            _log.Info("Entered DeleteTour");
             _database.DeleteTourFromDb(tourName);
             _database.DeleteAllLogsFromTour(tourName);
 
@@ -111,6 +138,7 @@ namespace SWE2_TOURPLANNER
 
         public int DeleteOnlyTour(string tourName)
         {
+            _log.Info("Entered DeleteOnlyTour");
             _database.DeleteTourFromDb(tourName);
 
             return 0;
@@ -118,34 +146,43 @@ namespace SWE2_TOURPLANNER
 
         public void ExportTourAsPdf(string tourName)
         {
+            _log.Info("Entered ExportTourAsPdf");
             var fileDialog = new FileDialog();
             string dirToSaveTo = fileDialog.SavePdfDialogFunc();
 
             if (dirToSaveTo != string.Empty)
             {
+                _log.Info("FileDialog.SavePdfDialogFunc returned string");
                 PdfDocument compPdf = _pdf.CreatePdf(_database.GetTour(tourName), _database.GetLogsList(tourName));
                 _iO.SavePdf(compPdf, dirToSaveTo);
+            }
+
+            else
+            {
+                _log.Info("FileDialog.SavePdfDialogFunc returned empty string");
             }
         }
 
 
         public int ExportToursAsJson()
         {
+            _log.Info("Entered ExportToursAsJson");
             var fileDialog = new FileDialog();
             string dirToSaveTo = fileDialog.SaveFileDialogFunc();
 
 
             var dataToSave = _database.GetExportablePackage();
 
-            //PortListHelper dataObjectToSave = new PortListHelper(dataToSave);
 
             string jsonString = JsonConvert.SerializeObject(dataToSave);
             if (dirToSaveTo != string.Empty)
             {
+                _log.Info("FileDialog.SaveFileDialogFunc returned string");
                 File.WriteAllText(dirToSaveTo, jsonString);
             }
             else
             {
+                _log.Info("FileDialog.SaveFileDialogFunc returned empty string");
                 return -1;
             }
 
@@ -155,15 +192,17 @@ namespace SWE2_TOURPLANNER
 
         public int ImportTours()
         {
+            _log.Info("Entered ImportTours");
             var fileDialog = new FileDialog();
             string fileDir = fileDialog.OpenFileDialogFunc();
 
             if (fileDir == "ERROR")
             {
-                MessageBox.Show("Could not get File Directory!");
+                _log.Info("FileDialog.OpenFileDialogFunc returned ERROR");
                 return -1;
             }
 
+            _log.Info("FileDialog.OpenFileDialogFunc returned string");
             string tmpJsonRaw = _iO.GetImportJson(fileDir);
             MessageBox.Show(tmpJsonRaw);
 

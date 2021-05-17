@@ -2,18 +2,21 @@
 using System.IO;
 using System.Windows;
 using Microsoft.Win32;
+using SWE2_TOURPLANNER.Logger;
 
 
 namespace SWE2_TOURPLANNER.DataAccessLayer
 {
     public class FileDialog
     {
+        private static readonly log4net.ILog _log = LogHelper.GetLogger();
         public FileDialog()
         {
         }
 
         public string SaveFileDialogFunc()
         {
+            _log.Info("Entered SaveFileDialogFunc");
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
             {
                 InitialDirectory = @"C:\",
@@ -29,6 +32,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public string OpenFileDialogFunc()
         {
+            _log.Info("Entered OpenFileDialogFunc");
             var openFileDialog = new OpenFileDialog
             {
                 InitialDirectory = "c:\\",
@@ -48,6 +52,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
         public string SavePdfDialogFunc()
         {
+            _log.Info("Entered SavePdfDialogFunc");
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
             {
                 InitialDirectory = @"C:\",

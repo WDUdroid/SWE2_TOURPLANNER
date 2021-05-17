@@ -1,16 +1,21 @@
 ﻿using System.Collections.Generic;
 using IronPdf;
+using SWE2_TOURPLANNER.Logger;
 using SWE2_TOURPLANNER.Model;
 
 namespace SWE2_TOURPLANNER.DataAccessLayer
 {
     public class PdfCreater
     {
+        private static readonly log4net.ILog _log = LogHelper.GetLogger();
+
         public PdfCreater()
         {}
 
         public PdfDocument CreatePdf(TourEntry tour, List<LogEntry> logs)
         {
+            _log.Info("Entered CreatePdf");
+
             string buildPDF = $"<h1 style=\"font-family:Courier;\"> Report of Tour: {tour.TourName}</h1>" +
                               $"<h2 style=\"font-family:Courier;\"> Tour description: {tour.TourDescription}</h2>" +
                               $"<h2 style=\"font-family:Courier;\">Route information: {tour.RouteInformation}</h2>" +
@@ -41,14 +46,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             var pdf = renderer.RenderHtmlAsPdf(buildPDF);
 
 
-
-
-            // Advanced:  Load external html assets: images, css and javascript.
-            // An optional "base" asset locating path can be set as a url or local directory. 
-            //var PDF = Renderer.RenderHtmlAsPdf("<img src='icons/iron.png'>", @"C:\site\assets\");
-
             return pdf;
-            //PDF.SaveAs("html-with-assets.pdf");
         }
     }
 }

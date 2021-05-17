@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
 using SWE2_TOURPLANNER.DataAccessLayer;
 using SWE2_TOURPLANNER.HelperObjects;
+using SWE2_TOURPLANNER.Logger;
 
 namespace SWE2_TOURPLANNER.Services
 {
@@ -25,7 +26,7 @@ namespace SWE2_TOURPLANNER.Services
 
         private readonly HttpClient _client;
 
-
+        private static readonly log4net.ILog _log = LogHelper.GetLogger();
 
         public MapQuest(string key, string imageSource)
         {
@@ -56,49 +57,39 @@ namespace SWE2_TOURPLANNER.Services
             var distance = (string)jSonResponse["route"]?["distance"];
             var sessionId = (string)jSonResponse["route"]?["sessionId"];
 
-            var imageDir = LoadImage(sessionId);
 
-            var mapQuestDataHelper = new MapQuestDataHelper(hasToll, hasBridge, hasTunnel, hasHighway, hasFerry, approxTime, distance, sessionId, imageDir);
+            var mapQuestDataHelper = new MapQuestDataHelper(hasToll, hasBridge, hasTunnel, hasHighway, hasFerry, approxTime, distance, sessionId, "");
             return mapQuestDataHelper;
         }
 
-        public string LoadImage(string sessionId)
+        public Byte[] LoadImage(string sessionId)
         {
-            if (sessionId == null)
+            try
             {
-                return _imageSource + @"\" + "fail.jpg";
+                var url = BaseURL + "/staticmap/v5/map?session=" + sessionId + "&key=" + _apiKey;
+
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+
+
+                using HttpWebResponse lxResponse = (HttpWebResponse) request.GetResponse();
+                using BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()!);
+                Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
+
+
+                return lnByte;
             }
 
-            var url = BaseURL + "/staticmap/v5/map?session=" + sessionId + "&key=" + _apiKey;
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-
-
-            Random rand = new Random();
-            var imageName = Convert.ToString(rand.Next(999999999));
-            imageName += ".jpg";
-
-            while (File.Exists(_imageSource + @"\" + imageName) == true)
+            catch (Exception e)
             {
-                imageName = Convert.ToString(rand.Next(999999999));
-                imageName += ".jpg";
+                _log.Error("LoadImage: " + e);
+                throw;
             }
-
-            using HttpWebResponse lxResponse = (HttpWebResponse)request.GetResponse();
-            using BinaryReader reader = new BinaryReader(lxResponse.GetResponseStream()!);
-            Byte[] lnByte = reader.ReadBytes(1 * 1024 * 1024 * 10);
-            using (FileStream fs = File.Create(_imageSource + @"\" + imageName))
-            {
-                fs.Write(lnByte, 0, lnByte.Length);
-            }
-
-            return _imageSource + @"\" + imageName;
         }
 
-        public int DoesExist(string location)
+        public int DoesLocationExist(string location)
         {
-
+            _log.Info("Entered DoesLocationExist");
             var task = Task.Run(() => _client.GetAsync(BaseURL + "/geocoding/v1/address?key=" + _apiKey + "&location=" + location));
             task.Wait();
 
