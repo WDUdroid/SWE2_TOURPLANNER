@@ -87,6 +87,13 @@ namespace SWE2_TOURPLANNER
             return 0;
         }
 
+        public int DeleteOnlyTour(string tourName)
+        {
+            _database.DeleteTourFromDb(tourName);
+
+            return 0;
+        }
+
         public void ExportTourAsPdf(string tourName)
         {
             var fileDialog = new FileDialog();
@@ -98,6 +105,7 @@ namespace SWE2_TOURPLANNER
                 _iO.SavePdf(compPdf, dirToSaveTo);
             }
         }
+
 
         public int ExportToursAsJson()
         {

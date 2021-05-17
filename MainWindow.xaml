@@ -19,8 +19,8 @@
         <DockPanel Grid.Row="0">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="File">
-                    <MenuItem Header="Export tours as PDF (WIP)" Command="{Binding ExportTourAsPDFCommand}" />
-                    <MenuItem Header="Export tours as JSON" Command="{Binding ExportToursAsJSONCommand}" />
+                    <MenuItem Header="Export tours as PDF (WIP)" Command="{Binding ExportTourAsPdfCommand}" />
+                    <MenuItem Header="Export tours as JSON" Command="{Binding ExportToursAsJsonCommand}" />
                     <MenuItem Header="Import tours" Command="{Binding ImportToursCommand}" />
                 </MenuItem>
             </Menu>
@@ -39,7 +39,7 @@
                 <Label Content="Search:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" />
                 <TextBox Name="SearchBox" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5" MaxLength="100"/>
             </Grid>
-            <Label Grid.Column="2" Content="{Binding CurrentData[0].TourName}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" FontSize="18" MaxWidth="300"/>
+            <Label Grid.Column="2" Content="{Binding CurrentData.TourName}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" FontSize="18" MaxWidth="300"/>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -64,6 +64,44 @@
                         <Button Grid.Row="1" Content="Remove" Margin="5" Command="{Binding DeleteTourCommand}" />
                     </Grid>
                 </TabItem>
+                <TabItem Header="Edit" Margin="0">
+                    <ScrollViewer>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Content="Edit Tour" VerticalContentAlignment="Bottom" Margin="5,5,5,10" FontSize="20" FontStyle="Italic"/>
+                            <Label Grid.Row="1" Content="Tourname:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="2" Text="{Binding EditTourName}" IsReadOnly="True" Foreground="Gray" Margin="5,1,5,1"></TextBox>
+                            <Label Grid.Row="3" Content="Tour description:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="4" Text="{Binding EditTourDescription}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                            <Label Grid.Row="5" Content="Route Type:" VerticalContentAlignment="Bottom" />
+                            <ComboBox Grid.Row="6" Text="{Binding EditRouteType}" Margin="5,1,5,1">
+                                <ComboBoxItem IsSelected="True">fastest</ComboBoxItem>
+                                <ComboBoxItem>shortest</ComboBoxItem>
+                                <ComboBoxItem>pedestrian</ComboBoxItem>
+                                <ComboBoxItem>bicycle</ComboBoxItem>
+                            </ComboBox>
+                            <Label Grid.Row="7" Content="From:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="8" Text="{Binding EditTourFrom}" Margin="5,1,5,1"></TextBox>
+                            <Label Grid.Row="9" Content="To:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="10" Text="{Binding EditTourTo}" Margin="5,1,5,10"></TextBox>
+                            <Button Grid.Row="11" Content="Edit" Margin="5" Command="{Binding EditTourCommand}"/>
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
                 <TabItem Header="+" Margin="0">
                     <ScrollViewer>
                         <Grid Grid.Row="1">
@@ -82,29 +120,30 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Content="Tourname:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="1" Text="{Binding TourName}" Margin="5,1,5,1"></TextBox>
-                            <Label Grid.Row="2" Content="Tour description:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="3" Text="{Binding TourDescription}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
-                            <Label Grid.Row="4" Content="Route Type:" VerticalContentAlignment="Bottom" />
-                            <ComboBox Grid.Row="5" Text="{Binding RouteType}" Margin="5,1,5,1">
+                            <Label Grid.Row="0" Content="Add Tour" VerticalContentAlignment="Bottom" Margin="5,5,5,10" FontSize="20" FontStyle="Italic"/>
+                            <Label Grid.Row="1" Content="Tourname:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="2" Text="{Binding TourName}" Margin="5,1,5,1"></TextBox>
+                            <Label Grid.Row="3" Content="Tour description:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="4" Text="{Binding TourDescription}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                            <Label Grid.Row="5" Content="Route Type:" VerticalContentAlignment="Bottom" />
+                            <ComboBox Grid.Row="6" Text="{Binding RouteType}" Margin="5,1,5,1">
                                 <ComboBoxItem IsSelected="True">fastest</ComboBoxItem>
                                 <ComboBoxItem>shortest</ComboBoxItem>
                                 <ComboBoxItem>pedestrian</ComboBoxItem>
                                 <ComboBoxItem>bicycle</ComboBoxItem>
                             </ComboBox>
-                            <Label Grid.Row="8" Content="From:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="9" Text="{Binding TourFrom}" Margin="5,1,5,1"></TextBox>
-                            <Label Grid.Row="10" Content="To:" VerticalContentAlignment="Bottom" />
-                            <TextBox Grid.Row="11" Text="{Binding TourTo}" Margin="5,1,5,10"></TextBox>
-                            <Button Grid.Row="12" Content="Add" Margin="5" Command="{Binding AddTourCommand}"/>
+                            <Label Grid.Row="7" Content="From:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="8" Text="{Binding TourFrom}" Margin="5,1,5,1"></TextBox>
+                            <Label Grid.Row="9" Content="To:" VerticalContentAlignment="Bottom" />
+                            <TextBox Grid.Row="10" Text="{Binding TourTo}" Margin="5,1,5,10"></TextBox>
+                            <Button Grid.Row="11" Content="Add" Margin="5" Command="{Binding AddTourCommand}"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
             </TabControl>
             <TabControl Grid.Column="1"  Margin="5,5,5,5">
                 <TabItem Header="Image" Margin="0">
-                    <Image Source="{Binding CurrentData[0].TourImage}"></Image>
+                    <Image Source="{Binding CurrentData.TourImage}"></Image>
                 </TabItem>
                 <TabItem Header="General">
                     <Grid Background="#ffffff">
@@ -119,13 +158,13 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" Content="From: "></Label>
-                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding CurrentData[0].TourFrom}" TextWrapping="Wrap" Margin="5"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding CurrentData.TourFrom}" TextWrapping="Wrap" Margin="5"/>
                         <Label Grid.Column="0" Grid.Row="1" Content="To: "></Label>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding CurrentData[0].TourTo}" TextWrapping="Wrap" Margin="5"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding CurrentData.TourTo}" TextWrapping="Wrap" Margin="5"/>
                         <Label Grid.Column="0" Grid.Row="2" Content="Route Information: "></Label>
-                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding CurrentData[0].RouteInformation}" TextWrapping="Wrap" Margin="5"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding CurrentData.RouteInformation}" TextWrapping="Wrap" Margin="5"/>
                         <Label Grid.Column="0" Grid.Row="3" Content="Tour Description: "></Label>
-                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding CurrentData[0].TourDescription}" TextWrapping="Wrap" Margin="5"/>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding CurrentData.TourDescription}" TextWrapping="Wrap" Margin="5"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Logs" Margin="0">
@@ -148,36 +187,97 @@
                             </Grid>
                         </TabItem>
                         <TabItem Header="Details">
-                            <Grid Grid.Row="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
-                                <DataGrid Grid.Row="0" ItemsSource="{Binding CurrentLog}"
-                                          AutoGenerateColumns="False"
-                                          AlternatingRowBackground="LightGray"
-                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Binding="{Binding LogDate}"  Header="date/time" Width="Auto"/>
-                                        <DataGridTextColumn Binding="{Binding TotalTime}" Header="total time (h)" Width="Auto"/>
-                                        <DataGridTextColumn Binding="{Binding Distance}" Header="distance (km)" Width="Auto" />
-                                        <DataGridTextColumn Binding="{Binding Elevation}"  Header="elevation (km)" Width="Auto" />
-                                        <DataGridTextColumn Binding="{Binding AvgSpeed}" Header="avg. speed (km/h)" Width="Auto" />
-                                        <DataGridTextColumn Binding="{Binding BPM}" Header="bpm" Width="Auto" />
-                                        <DataGridTextColumn Binding="{Binding Rating}"  Header="rating" Width="1*" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                                <DataGrid Grid.Row="1" ItemsSource="{Binding CurrentLog}"
-                                          AutoGenerateColumns="False"
-                                          AlternatingRowBackground="LightGray"
-                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Binding="{Binding Report}" Header="report" Width="1*" />
-                                        <DataGridTextColumn Binding="{Binding UsedSupplies}" Header="used supplies" Width="1*" />
-                                        <DataGridTextColumn Binding="{Binding Tourmates}" Header="tourmates" Width="1*" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
+                            <ScrollViewer>
+                                <Grid Background="#ffffff">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Column="0" Grid.Row="0" Content="Total Time: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding CurrentLog.TotalTime}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="1" Content="Distance: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding CurrentLog.Distance}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="2" Content="Elevation: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding CurrentLog.Elevation}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="3" Content="Average Speed: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding CurrentLog.AvgSpeed}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="4" Content="BPM: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding CurrentLog.BPM}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="5" Content="Rating: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding CurrentLog.Rating}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="6" Content="Report: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="6" Text="{Binding CurrentLog.Report}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="7" Content="Used Supplies: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="7" Text="{Binding CurrentLog.UsedSupplies}" TextWrapping="Wrap" Margin="5"/>
+                                    <Label Grid.Column="0" Grid.Row="8" Content="Tourmates: "></Label>
+                                    <TextBlock Grid.Column="1" Grid.Row="8" Text="{Binding CurrentLog.Tourmates}" TextWrapping="Wrap" Margin="5"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Edit Log">
+                            <ScrollViewer>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="Edit Log" VerticalContentAlignment="Bottom" Margin="5,5,5,10" FontSize="20" FontStyle="Italic"/>
+                                    <Label Grid.Row="1" Content="Total Time:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="2" PreviewTextInput="NumberValidationTextBox" Text="{Binding EditTotalTime}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="3" Content="Distance in m:" VerticalContentAlignment="Bottom"/>
+                                    <TextBox Grid.Row="4" PreviewTextInput="NumberValidationTextBox" Text="{Binding EditDistance}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="5" Content="Elevation in m:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="6" PreviewTextInput="NumberValidationTextBox" Text="{Binding EditElevation}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="7" Content="Average Speed in m/h:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="8" PreviewTextInput="NumberValidationTextBox" Text="{Binding EditAvgSpeed}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="9" Content="Heartbeats per minute:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="10" PreviewTextInput="NumberValidationTextBox" Text="{Binding EditBpm}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="11" Content="Rating:" VerticalContentAlignment="Bottom" />
+                                    <ComboBox Grid.Row="12" Text="{Binding EditRating}" Margin="5,1,5,1">
+                                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
+                                        <ComboBoxItem>2</ComboBoxItem>
+                                        <ComboBoxItem>3</ComboBoxItem>
+                                        <ComboBoxItem>4</ComboBoxItem>
+                                        <ComboBoxItem>5</ComboBoxItem>
+                                    </ComboBox>
+                                    <Label Grid.Row="13" Content="Report:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="14" Text="{Binding EditReport}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                                    <Label Grid.Row="15" Content="Used Supplies:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="16" Text="{Binding EditUsedSupplies}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                                    <Label Grid.Row="17" Content="Tourmates:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="18" Text="{Binding EditTourmates}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                                    <Button Grid.Row="19" Content="Edit" Margin="5" Command="{Binding EditLogCommand}" />
+                                </Grid>
+                            </ScrollViewer>
                         </TabItem>
                         <TabItem Header="+">
                             <ScrollViewer>
@@ -202,32 +302,34 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="Total Time:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="1" PreviewTextInput="NumberValidationTextBox" Text="{Binding TotalTime}" Margin="5,1,5,1" MaxLength="9"></TextBox>
-                                    <Label Grid.Row="2" Content="Distance in m:" VerticalContentAlignment="Bottom"/>
-                                    <TextBox Grid.Row="3" PreviewTextInput="NumberValidationTextBox" Text="{Binding Distance}" Margin="5,1,5,1" MaxLength="9"></TextBox>
-                                    <Label Grid.Row="4" Content="Elevation in m:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="5" PreviewTextInput="NumberValidationTextBox" Text="{Binding Elevation}" Margin="5,1,5,1" MaxLength="9"></TextBox>
-                                    <Label Grid.Row="6" Content="Average Speed in m/h:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="7" PreviewTextInput="NumberValidationTextBox" Text="{Binding AvgSpeed}" Margin="5,1,5,1" MaxLength="9"></TextBox>
-                                    <Label Grid.Row="8" Content="Heartbeats per minute:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="9" PreviewTextInput="NumberValidationTextBox" Text="{Binding BPM}" Margin="5,1,5,1" MaxLength="9"></TextBox>
-                                    <Label Grid.Row="10" Content="Rating:" VerticalContentAlignment="Bottom" />
-                                    <ComboBox Grid.Row="11" Text="{Binding Rating}" Margin="5,1,5,1">
+                                    <Label Grid.Row="0" Content="Add Log" VerticalContentAlignment="Bottom" Margin="5,5,5,10" FontSize="20" FontStyle="Italic"/>
+                                    <Label Grid.Row="1" Content="Total Time:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="2" PreviewTextInput="NumberValidationTextBox" Text="{Binding TotalTime}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="3" Content="Distance in m:" VerticalContentAlignment="Bottom"/>
+                                    <TextBox Grid.Row="4" PreviewTextInput="NumberValidationTextBox" Text="{Binding Distance}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="5" Content="Elevation in m:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="6" PreviewTextInput="NumberValidationTextBox" Text="{Binding Elevation}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="7" Content="Average Speed in m/h:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="8" PreviewTextInput="NumberValidationTextBox" Text="{Binding AvgSpeed}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="9" Content="Heartbeats per minute:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="10" PreviewTextInput="NumberValidationTextBox" Text="{Binding Bpm}" Margin="5,1,5,1" MaxLength="9"></TextBox>
+                                    <Label Grid.Row="11" Content="Rating:" VerticalContentAlignment="Bottom" />
+                                    <ComboBox Grid.Row="12" Text="{Binding Rating}" Margin="5,1,5,1">
                                         <ComboBoxItem IsSelected="True">1</ComboBoxItem>
                                         <ComboBoxItem>2</ComboBoxItem>
                                         <ComboBoxItem>3</ComboBoxItem>
                                         <ComboBoxItem>4</ComboBoxItem>
                                         <ComboBoxItem>5</ComboBoxItem>
                                     </ComboBox>
-                                    <Label Grid.Row="12" Content="Report:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="13" Text="{Binding Report}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
-                                    <Label Grid.Row="14" Content="Used Supplies:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="15" Text="{Binding UsedSupplies}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
-                                    <Label Grid.Row="16" Content="Tourmates:" VerticalContentAlignment="Bottom" />
-                                    <TextBox Grid.Row="17" Text="{Binding Tourmates}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
-                                    <Button Grid.Row="18" Content="Add" Margin="5" Command="{Binding AddLogCommand}" />
+                                    <Label Grid.Row="13" Content="Report:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="14" Text="{Binding Report}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                                    <Label Grid.Row="15" Content="Used Supplies:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="16" Text="{Binding UsedSupplies}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                                    <Label Grid.Row="17" Content="Tourmates:" VerticalContentAlignment="Bottom" />
+                                    <TextBox Grid.Row="18" Text="{Binding Tourmates}" Margin="5,1,5,1" TextWrapping="Wrap"></TextBox>
+                                    <Button Grid.Row="19" Content="Add" Margin="5" Command="{Binding AddLogCommand}" />
                                 </Grid>
                             </ScrollViewer>
                         </TabItem>

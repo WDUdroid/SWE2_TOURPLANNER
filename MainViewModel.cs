@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using SWE2_TOURPLANNER.Annotations;
-using SWE2_TOURPLANNER.DataAccessLayer;
 using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Model;
-using SWE2_TOURPLANNER.Services;
 
 namespace SWE2_TOURPLANNER
 {
@@ -22,38 +17,69 @@ namespace SWE2_TOURPLANNER
         public static ObservableCollection<TourEntry> Data { get; }
             = new ObservableCollection<TourEntry>();
 
-        public static ObservableCollection<TourEntry> CurrentData { get; }
-            = new ObservableCollection<TourEntry>();
-
         public static ObservableCollection<LogEntry> CurrentTourLogs { get; set; }
             = new ObservableCollection<LogEntry>();
 
-        public static ObservableCollection<LogEntry> CurrentLog { get; }
-            = new ObservableCollection<LogEntry>();
+        private LogEntry _currentLog;  
+        public LogEntry CurrentLog
+        {
+            get => _currentLog;
+            set
+            {
+                _currentLog = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
+
+        private TourEntry _currentData;
 
         // Tour Props
-        private string _tourName { get; set; }
-        private string _tourDescription { get; set; }
-        private string _routeInformation { get; set; }
-        private string _tourDistance { get; set; }
-        private string _tourFrom { get; set; }
-        private string _tourTo { get; set; }
-        private string _tourImage { get; set; }
+        private string _tourName;
+        private string _tourDescription;
+        private string _routeInformation;
+        private string _tourDistance;
+        private string _tourFrom;
+        private string _tourTo;
+        private string _tourImage;
 
         // Tour Option Props
-        private string _routeType { get; set; }
+        private string _routeType;
 
         // Log Props
         //private DateTime _logDate { get; set; }
-        private string _totalTime { get; set; }
-        private string _distance { get; set; }
-        private string _elevation { get; set; }
-        private string _avgSpeed { get; set; }
-        private string _bpm { get; set; }
-        private string _rating { get; set; }
-        private string _report { get; set; }
-        private string _usedSupplies { get; set; }
-        private string _tourmates { get; set; }
+        private string _totalTime;
+        private string _distance;
+        private string _elevation;
+        private string _avgSpeed;
+        private string _bpm;
+        private string _rating;
+        private string _report;
+        private string _usedSupplies;
+        private string _tourmates;
+
+        // Edit Props
+
+        private string _editTourName;
+        private string _editTourDescription;
+        private string _editRouteInformation;
+        private string _editTourDistance;
+        private string _editTourFrom;
+        private string _editTourTo;
+        private string _editTourImage;
+        private string _editRouteType;
+
+        // Edit Log Props
+        //private DateTime _logDate { get; set; }
+        private string _editTotalTime;
+        private string _editDistance;
+        private string _editElevation;
+        private string _editAvgSpeed;
+        private string _editBpm;
+        private string _editRating;
+        private string _editReport;
+        private string _editUsedSupplies;
+        private string _editTourmates;
 
         // UI Bindings list and search
         private string _searchText;
@@ -61,8 +87,6 @@ namespace SWE2_TOURPLANNER
         private LogEntry _selectedLogListItem;
 
         // other Props
-        private static string _currentlySelectedTour { get; set; }
-        private static DateTime _currentlySelectedLog { get; set; }
 
         // Tour Getter/Setter
         public string TourName
@@ -83,7 +107,6 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged(); // using CallerMemberName
             }
         }
-
         public string RouteInformation
         {
             get => this._routeInformation;
@@ -93,7 +116,6 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged();
             }
         }
-
         public string TourDistance
         {
             get => this._tourDistance;
@@ -103,7 +125,6 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged();
             }
         }
-
         public string TourFrom
         {
             get => this._tourFrom;
@@ -113,7 +134,6 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged();
             }
         }
-
         public string TourTo
         {
             get => this._tourTo;
@@ -123,7 +143,6 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged();
             }
         }
-
         public string TourImage
         {
             get => this._tourImage;
@@ -133,7 +152,6 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged();
             }
         }
-
         public string RouteType
         {
             get => this._routeType;
@@ -181,7 +199,7 @@ namespace SWE2_TOURPLANNER
                 this.OnPropertyChanged(); // using CallerMemberName
             }
         }
-        public string BPM
+        public string Bpm
         {
             get => this._bpm;
             set
@@ -227,6 +245,172 @@ namespace SWE2_TOURPLANNER
             }
         }
 
+        public string EditTourName
+        {
+            get => this._editTourName;
+            set
+            {
+                this._editTourName = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditTourDescription
+        {
+            get => this._editTourDescription;
+            set
+            {
+                this._editTourDescription = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditRouteInformation
+        {
+            get => this._editRouteInformation;
+            set
+            {
+                this._editRouteInformation = value;
+                this.OnPropertyChanged();
+            }
+        }
+        public string EditTourDistance
+        {
+            get => this._editTourDistance;
+            set
+            {
+                this._editTourDistance = value;
+                this.OnPropertyChanged();
+            }
+        }
+        public string EditTourFrom
+        {
+            get => this._editTourFrom;
+            set
+            {
+                this._editTourFrom = value;
+                this.OnPropertyChanged();
+            }
+        }
+        public string EditTourTo
+        {
+            get => this._editTourTo;
+            set
+            {
+                this._editTourTo = value;
+                this.OnPropertyChanged();
+            }
+        }
+        public string EditTourImage
+        {
+            get => this._editTourImage;
+            set
+            {
+                this._editTourImage = value;
+                this.OnPropertyChanged();
+            }
+        }
+        public string EditRouteType
+        {
+            get => this._editRouteType;
+            set
+            {
+                this._editRouteType = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+
+        public string EditTotalTime
+        {
+            get => this._editTotalTime;
+            set
+            {
+                this._editTotalTime = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditDistance
+        {
+            get => this._editDistance;
+            set
+            {
+                this._editDistance = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditElevation
+        {
+            get => this._editElevation;
+            set
+            {
+                this._editElevation = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditAvgSpeed
+        {
+            get => this._editAvgSpeed;
+            set
+            {
+                this._editAvgSpeed = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditBpm
+        {
+            get => this._editBpm;
+            set
+            {
+                this._editBpm = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditRating
+        {
+            get => this._editRating;
+            set
+            {
+                this._editRating = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditReport
+        {
+            get => this._editReport;
+            set
+            {
+                this._editReport = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditUsedSupplies
+        {
+            get => this._editUsedSupplies;
+            set
+            {
+                this._editUsedSupplies = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+        public string EditTourmates
+        {
+            get => this._editTourmates;
+            set
+            {
+                this._editTourmates = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
+        public TourEntry CurrentData
+        {
+            get => _currentData;
+            set
+            {
+                _currentData = value;
+                this.OnPropertyChanged(); // using CallerMemberName
+            }
+        }
+
         public string SearchText
         {
             get => this._searchText;
@@ -260,25 +444,20 @@ namespace SWE2_TOURPLANNER
             }
         }
 
-        public static string CurrentlySelectedTour
-        {
-            get => _currentlySelectedTour;
-            set => _currentlySelectedTour = value;
-        }
-        public static DateTime CurrentlySelectedLog
-        {
-            get => _currentlySelectedLog;
-            set => _currentlySelectedLog = value;
-        }
+        public string CurrentlySelectedTour { get; set; }
+
+        public DateTime CurrentlySelectedLog { get; set; }
 
         public RelayCommand AddTourCommand { get; }
         public RelayCommand DeleteTourCommand { get; }
+        public RelayCommand EditTourCommand { get; }
+        public RelayCommand EditLogCommand { get; }
 
         public RelayCommand AddLogCommand { get; }
         public RelayCommand DeleteLogCommand { get; }
 
-        public RelayCommand ExportTourAsPDFCommand { get; }
-        public RelayCommand ExportToursAsJSONCommand { get; }
+        public RelayCommand ExportTourAsPdfCommand { get; }
+        public RelayCommand ExportToursAsJsonCommand { get; }
         public RelayCommand ImportToursCommand { get; }
 
 
@@ -334,7 +513,7 @@ namespace SWE2_TOURPLANNER
             {
                 if (this.TotalTime == null || this.Distance == null ||
                     this.Elevation == null || this.AvgSpeed == null ||
-                    this.BPM == null || this.Report == null || this.UsedSupplies == null || this.Tourmates == null)
+                    this.Bpm == null || this.Report == null || this.UsedSupplies == null || this.Tourmates == null)
                 {
                     MessageBox.Show("Please fill out all boxes!");
                 }
@@ -346,17 +525,17 @@ namespace SWE2_TOURPLANNER
                         var tmpLogDate = DateTime.Now;
 
                         CurrentTourLogs.Add(new LogEntry(CurrentlySelectedTour, tmpLogDate,
-                            int.Parse(this.TotalTime), int.Parse(this.Distance),
-                            int.Parse(this.Elevation), this.AvgSpeed,
-                            int.Parse(this.BPM), this.Rating, this.Report,
-                            this.UsedSupplies, this.Tourmates));
+                            int.Parse(TotalTime), int.Parse(Distance),
+                            int.Parse(Elevation), AvgSpeed,
+                            int.Parse(Bpm), Rating, Report,
+                            UsedSupplies, Tourmates));
 
                         //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                         _businessLayer.AddLog(CurrentlySelectedTour, tmpLogDate,
-                            this.TotalTime, this.Distance,
-                            this.Elevation, this.AvgSpeed,
-                            this.BPM, this.Rating, this.Report,
-                            this.UsedSupplies, this.Tourmates);
+                            TotalTime, Distance,
+                            Elevation, AvgSpeed,
+                            Bpm, Rating, Report,
+                            UsedSupplies, Tourmates);
 
 
 
@@ -364,7 +543,7 @@ namespace SWE2_TOURPLANNER
                         Distance = string.Empty;
                         Elevation = string.Empty;
                         AvgSpeed = string.Empty;
-                        BPM = string.Empty;
+                        Bpm = string.Empty;
                         Report = string.Empty;
                         UsedSupplies = string.Empty;
                         Tourmates = string.Empty;
@@ -374,15 +553,15 @@ namespace SWE2_TOURPLANNER
 
             DeleteLogCommand = new RelayCommand((_) =>
             {
-                if (CurrentLog.Count != 0 && CurrentlySelectedTour != null)
+                if (CurrentLog != null && CurrentlySelectedTour != null)
                 {
                     //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
-                    _businessLayer.DeleteLog(CurrentLog[0].TourName, CurrentLog[0].LogDate,
-                        CurrentLog[0].TotalTime.ToString(), CurrentLog[0].Distance.ToString(),
-                        CurrentLog[0].Elevation.ToString(), CurrentLog[0].AvgSpeed,
-                        CurrentLog[0].BPM.ToString(), CurrentLog[0].Rating, CurrentLog[0].Report,
-                        CurrentLog[0].UsedSupplies, CurrentLog[0].Tourmates);
-                    CurrentLog.Clear();
+                    _businessLayer.DeleteLog(CurrentLog.TourName, CurrentLog.LogDate,
+                        CurrentLog.TotalTime.ToString(), CurrentLog.Distance.ToString(),
+                        CurrentLog.Elevation.ToString(), CurrentLog.AvgSpeed,
+                        CurrentLog.BPM.ToString(), CurrentLog.Rating, CurrentLog.Report,
+                        CurrentLog.UsedSupplies, CurrentLog.Tourmates);
+                    CurrentLog = null;
                     CurrentTourLogs.Remove(CurrentTourLogs.Single(i => i.LogDate == CurrentlySelectedLog));
                 }
             });
@@ -393,13 +572,94 @@ namespace SWE2_TOURPLANNER
                 {
                     //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                     _businessLayer.DeleteTour(CurrentlySelectedTour);
-                    CurrentData.Clear();
+                    CurrentData = null;
                     CurrentTourLogs.Clear();
                     Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
                 }
             });
 
-            ExportTourAsPDFCommand = new RelayCommand(async (_) =>
+            EditTourCommand = new RelayCommand((_) =>
+            {
+                if (EditTourDescription == null ||
+                    EditTourFrom == null || EditTourTo == null)
+                {
+                    MessageBox.Show("Please fill out all boxes!");
+                }
+
+                else
+                {
+
+                    if (CurrentlySelectedTour != null && Data.Any(i => i.TourName == CurrentlySelectedTour))
+                    {
+                        //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
+                        _businessLayer.DeleteOnlyTour(CurrentlySelectedTour);
+                        CurrentData = null;
+                        Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
+
+                        MapQuestDataHelper tmpDc = _businessLayer.GetMapQuestInfo(EditTourFrom, EditTourTo, EditRouteType);
+
+                        this.RouteInformation = $"Tour length: {tmpDc.Distance}\r\n" +
+                                                $"Approx. time to complete: {tmpDc.ApproxTime}\r\n" +
+                                                $"Tolls: {tmpDc.HasTollRoad}\r\n" +
+                                                $"Bridges: {tmpDc.HasBridge}\r\n" +
+                                                $"Ferries: {tmpDc.HasFerry}\r\n" +
+                                                $"Highways: {tmpDc.HasHighway}\r\n" +
+                                                $"Tunnels: {tmpDc.HasTunnel}\r\n" +
+                                                $"Used sessionID: {tmpDc.SessionId}";
+
+                        Data.Add(new TourEntry(CurrentlySelectedTour, EditTourDescription, EditRouteInformation,
+                            tmpDc.Distance, EditTourFrom, EditTourTo, tmpDc.TourImage));
+
+                        _businessLayer.AddTour(CurrentlySelectedTour, EditTourDescription, EditRouteInformation,
+                            tmpDc.Distance, EditTourFrom, EditTourTo, tmpDc.TourImage);
+
+                        SearchText = "";
+                    }
+                }
+            });
+
+            EditLogCommand = new RelayCommand((_) =>
+            {
+                if (EditTotalTime == null || EditDistance == null || EditElevation == null || EditAvgSpeed == null || 
+                    EditBpm == null || EditRating == null || EditReport == null || EditUsedSupplies == null || EditTourmates == null)
+                {
+                    MessageBox.Show("Please fill out all boxes!");
+                }
+
+                else
+                {
+
+                    if (CurrentLog != null && CurrentlySelectedTour != null)
+                    {
+                        var tmpDateSave = CurrentLog.LogDate; 
+
+                        _businessLayer.DeleteLog(CurrentLog.TourName, CurrentLog.LogDate,
+                            CurrentLog.TotalTime.ToString(), CurrentLog.Distance.ToString(),
+                            CurrentLog.Elevation.ToString(), CurrentLog.AvgSpeed,
+                            CurrentLog.BPM.ToString(), CurrentLog.Rating, CurrentLog.Report,
+                            CurrentLog.UsedSupplies, CurrentLog.Tourmates);
+                        CurrentLog = null;
+                        CurrentTourLogs.Remove(CurrentTourLogs.Single(i => i.LogDate == CurrentlySelectedLog));
+
+
+                        CurrentTourLogs.Add(new LogEntry(CurrentlySelectedTour, tmpDateSave,
+                            int.Parse(EditTotalTime), int.Parse(EditDistance),
+                            int.Parse(EditElevation), EditAvgSpeed,
+                            int.Parse(EditBpm), EditRating, EditReport,
+                            EditUsedSupplies, EditTourmates));
+
+                        _businessLayer.AddLog(CurrentlySelectedTour, tmpDateSave,
+                            EditTotalTime, EditDistance,
+                            EditElevation, EditAvgSpeed,
+                            EditBpm, EditRating, EditReport,
+                            EditUsedSupplies, EditTourmates);
+                    }
+
+
+                }
+            });
+
+            ExportTourAsPdfCommand = new RelayCommand((_) =>
             {
                 if (CurrentlySelectedTour != null)
                 {
@@ -407,7 +667,7 @@ namespace SWE2_TOURPLANNER
                 }
             });
 
-            ExportToursAsJSONCommand = new RelayCommand((_) =>
+            ExportToursAsJsonCommand = new RelayCommand((_) =>
             {
                 if (CurrentlySelectedTour != null)
                 {
@@ -429,7 +689,7 @@ namespace SWE2_TOURPLANNER
 
         }
 
-        void SearchTextProcessing(string searchText)
+        private void SearchTextProcessing(string searchText)
         {
             Data.Clear();
 
@@ -442,16 +702,21 @@ namespace SWE2_TOURPLANNER
 
         }
 
-        void SelectedTourListItemProcessing(TourEntry selectedTourEntry)
+        private void SelectedTourListItemProcessing(TourEntry selectedTourEntry)
         {
             if (selectedTourEntry != null)
             {
-                CurrentLog.Clear();
+                CurrentLog = null;
                 CurrentlySelectedTour = selectedTourEntry.TourName;
-                CurrentData.Clear();
-                CurrentData.Add(new TourEntry(selectedTourEntry.TourName, selectedTourEntry.TourDescription,
-                    selectedTourEntry.RouteInformation, selectedTourEntry.TourDistance, selectedTourEntry.TourFrom,
-                    selectedTourEntry.TourTo, selectedTourEntry.TourImage));
+                CurrentData = selectedTourEntry;
+
+                EditTourName = selectedTourEntry.TourName;
+                EditTourDescription = selectedTourEntry.TourDescription;
+                EditRouteInformation = selectedTourEntry.RouteInformation;
+                EditTourDistance = selectedTourEntry.TourDistance;
+                EditTourFrom = selectedTourEntry.TourFrom;
+                EditTourTo = selectedTourEntry.TourTo;
+                EditTourImage = selectedTourEntry.TourImage;
 
                 CurrentTourLogs.Clear();
 
@@ -465,16 +730,27 @@ namespace SWE2_TOURPLANNER
             }
         }
 
-        void SelectedLogListItemProcessing(LogEntry selectedLogEntry)
+        private void SelectedLogListItemProcessing(LogEntry selectedLogEntry)
         {
             if (selectedLogEntry != null)
             {
                 CurrentlySelectedLog = selectedLogEntry.LogDate;
-                CurrentLog.Clear();
-                CurrentLog.Add(new LogEntry(selectedLogEntry.TourName, selectedLogEntry.LogDate,
+
+                EditTotalTime = selectedLogEntry.TotalTime.ToString();
+                EditDistance = selectedLogEntry.Distance.ToString();
+                EditElevation = selectedLogEntry.Elevation.ToString();
+                EditAvgSpeed = selectedLogEntry.AvgSpeed;
+                EditBpm = selectedLogEntry.BPM.ToString();
+                EditRating = selectedLogEntry.Rating;
+                EditReport = selectedLogEntry.Report;
+                EditUsedSupplies = selectedLogEntry.UsedSupplies;
+                EditTourmates = selectedLogEntry.Tourmates;
+
+
+                CurrentLog = new LogEntry(selectedLogEntry.TourName, selectedLogEntry.LogDate,
                                                 selectedLogEntry.TotalTime, selectedLogEntry.Distance, selectedLogEntry.Elevation,
                                                 selectedLogEntry.AvgSpeed, selectedLogEntry.BPM, selectedLogEntry.Rating, selectedLogEntry.Report,
-                                                selectedLogEntry.UsedSupplies, selectedLogEntry.Tourmates));
+                                                selectedLogEntry.UsedSupplies, selectedLogEntry.Tourmates);
             }
         }
 

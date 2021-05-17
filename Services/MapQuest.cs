@@ -35,7 +35,7 @@ namespace SWE2_TOURPLANNER.Services
         public MapQuestDataHelper GetMapQuestRouteSession(string from, string to, string routeType)
         {
             var task = Task.Run(() => _client.GetAsync(BaseURL + "/directions/v2/route?key=" + _apiKey + "&from=" +
-                                                      @from + "&to=" + to + "&routeType=" + routeType));
+                                                       @from + "&to=" + to + "&routeType=" + routeType));
             task.Wait();
             //var rawResponse = await Client.GetAsync(BaseURL + "/directions/v2/route?key=" + ApiKey + "&from=" + @from + "&to=" + to + "&routeType=" + routeType);
             var stringJsonResponse = task.Result.Content.ReadAsStringAsync().Result;
