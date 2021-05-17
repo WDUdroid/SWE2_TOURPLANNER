@@ -472,15 +472,29 @@ namespace SWE2_TOURPLANNER
             AddTourCommand = new RelayCommand((_) =>
             {
                 if (this.TourName == null || this.TourDescription == null ||
-                    this.RouteInformation == null || this.Distance == null ||
                     this.TourFrom == null || this.TourTo == null)
                 {
                     MessageBox.Show("Please fill out all boxes!");
                 }
 
+                else if (_businessLayer.DoLocationsExist(TourFrom, TourTo) == -1)
+                {
+                    MessageBox.Show("One or more locations do not exist!");
+                }
+
+                else if (_businessLayer.DoesTourExist(TourName) == -1)
+                {
+                    MessageBox.Show("Tour does already exist!");
+                }
+
+                else if (TourFrom.ToLower() == TourTo.ToLower())
+                {
+                    MessageBox.Show("Start can not be same location as finish!");
+                }
+
                 else
                 {
-                    MapQuestDataHelper tmpDc = _businessLayer.GetMapQuestInfo(this.TourFrom, this.TourTo, this.RouteType);
+                    MapQuestDataHelper tmpDc = _businessLayer.GetMapQuestInfo(TourFrom, TourTo, RouteType);
 
                     this.RouteInformation = $"Tour length: {tmpDc.Distance}\r\n" +
                                             $"Approx. time to complete: {tmpDc.ApproxTime}\r\n" +
@@ -491,11 +505,11 @@ namespace SWE2_TOURPLANNER
                                             $"Tunnels: {tmpDc.HasTunnel}\r\n" +
                                             $"Used sessionID: {tmpDc.SessionId}";
 
-                    Data.Add(new TourEntry(this.TourName, this.TourDescription, this.RouteInformation,
-                        tmpDc.Distance, this.TourFrom, this.TourTo, tmpDc.TourImage));
+                    Data.Add(new TourEntry(TourName, TourDescription, RouteInformation,
+                        tmpDc.Distance, TourFrom, TourTo, tmpDc.TourImage));
 
-                    _businessLayer.AddTour(this.TourName, this.TourDescription, this.RouteInformation,
-                        tmpDc.Distance, this.TourFrom, this.TourTo, tmpDc.TourImage);
+                    _businessLayer.AddTour(TourName, TourDescription, RouteInformation,
+                        tmpDc.Distance, TourFrom, TourTo, tmpDc.TourImage);
 
                     SearchText = "";
 
@@ -584,6 +598,16 @@ namespace SWE2_TOURPLANNER
                     EditTourFrom == null || EditTourTo == null)
                 {
                     MessageBox.Show("Please fill out all boxes!");
+                }
+
+                else if (_businessLayer.DoLocationsExist(EditTourFrom, EditTourTo) == -1)
+                {
+                    MessageBox.Show("One or more locations do not exist!");
+                }
+
+                else if (EditTourFrom.ToLower() == EditTourTo.ToLower())
+                {
+                    MessageBox.Show("Start can not be same location as finish!");
                 }
 
                 else

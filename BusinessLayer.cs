@@ -40,6 +40,28 @@ namespace SWE2_TOURPLANNER
             //Log = log4net.LogManager.GetLogger("BusinessLayer.cs");
         }
 
+        public int DoesTourExist(string tourName)
+        {
+            if (_database.DoesTourAlreadyExist(tourName) != 0)
+            {
+                return -1;
+            }
+
+            return 0;
+        }
+
+        public int DoLocationsExist(string tourFrom, string tourTo)
+        {
+            if (_map.DoesExist(tourFrom) == -1 ||
+                _map.DoesExist(tourTo) == -1)
+            {
+                return -1;
+            }
+
+            return 0;
+        }
+
+
         public MapQuestDataHelper GetMapQuestInfo(string tourFrom, string tourTo, string routeType)
         {
             return _map.GetMapQuestRouteSession(tourFrom, tourTo, routeType);
