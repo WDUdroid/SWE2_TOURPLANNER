@@ -31,7 +31,6 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             using (JsonTextReader reader = new JsonTextReader(file))
             {
                 configFileContent = (JObject)JToken.ReadFrom(reader);
-                //MessageBox.Show(configFileContent.ToString());
             }
 
             if (configFileContent.ContainsKey("DatabaseSource") && configFileContent.ContainsKey("ImageSource"))
@@ -40,10 +39,6 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
                 ImageSource = (string)configFileContent["ImageSource"];
                 MapQuestKey = (string)configFileContent["MapQuestKey"];
             }
-
-            //MessageBox.Show(DatabaseSource);
-            //MessageBox.Show(ImageSource);
-            //MessageBox.Show(MapQuestKey);
         }
     }
 }

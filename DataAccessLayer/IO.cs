@@ -43,6 +43,12 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
         {
             try
             {
+                if (!path.EndsWith(".pdf"))
+                {
+                    return -1;
+                }
+
+
                 _log.Info("Entered SafePdf");
 
                 pdf.SaveAs(path);
