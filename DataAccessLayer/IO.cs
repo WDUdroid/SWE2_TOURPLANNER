@@ -1,8 +1,17 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
+using System.Windows.Controls;
+using System.Windows.Ink;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using IronPdf;
 using SWE2_TOURPLANNER.Logger;
+using Color = System.Drawing.Color;
+using Image = System.Drawing.Image;
 
 namespace SWE2_TOURPLANNER.DataAccessLayer
 {
@@ -80,9 +89,9 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             return _imageSource + @"\" + imageName;
         }
 
-        public int SaveImage(string fileName, Byte[] imageBytes)
+        public int SaveNewTourImage(string fileName, Byte[] imageBytes)
         {
-            _log.Info("Entered SaveImage");
+            _log.Info("Entered SaveNewTourImage");
 
             try
             {
@@ -98,9 +107,65 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
 
             catch (Exception e)
             {
-                _log.Error("SaveImage: " + e);
+                _log.Error("SaveNewTourImage: " + e);
                 return -1;
             }
+        }
+
+        public int UpdateTourImage(string path, Bitmap image)
+        {
+            _log.Info("Entered UpdateTourImageWithDrawing");
+
+            image.Save(path);
+
+            return 0;
+        }
+
+        public Bitmap FetchImageFormPath(string fileName)
+        {
+            _log.Info("Entered FetchImageFromPath");
+
+            using (Stream BitmapStream = System.IO.File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                Image img = Image.FromStream(BitmapStream);
+
+                var mBitmap = new Bitmap(img);
+
+                return mBitmap;
+            }
+        }
+
+        public Bitmap ConvertStrokestoImage(StrokeCollection strokes, int width, int height)
+        {
+            InkCanvas Ink = new InkCanvas();
+            Ink.RenderSize = new System.Windows.Size(width, height);
+            Ink.Strokes.Add(strokes);
+            RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(Ink);
+            MemoryStream stream = new MemoryStream();
+            BitmapEncoder encoder = new BmpBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+            encoder.Save(stream);
+            Bitmap b = new Bitmap(stream);
+            return b;
+        }
+
+        public Bitmap CombineBitmap(Bitmap under, Bitmap over)
+        {
+            // Copy the background.
+            var combinedBitmap = new Bitmap(under);
+            over.MakeTransparent(Color.Black);
+
+
+            // Add the overlay.
+
+            using (Graphics gr = Graphics.FromImage(combinedBitmap))
+            {
+                gr.DrawImage(over, 0,0);
+
+            }
+
+            return combinedBitmap;
         }
     }
 }
