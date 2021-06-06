@@ -13,8 +13,8 @@ using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
 using SWE2_TOURPLANNER.DataAccessLayer;
+using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Logger;
-using SWE2_TOURPLANNER.Model;
 
 namespace SWE2_TOURPLANNER.Services
 {
@@ -66,7 +66,7 @@ namespace SWE2_TOURPLANNER.Services
         {
             try
             {
-                var url = BaseURL + "/staticmap/v5/map?session=" + sessionId + "&key=" + _apiKey + "&size=800,600";
+                var url = BaseURL + "/staticmap/v5/map?session=" + sessionId + "&key=" + _apiKey;
 
                 HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
                 request.AutomaticDecompression = DecompressionMethods.GZip;

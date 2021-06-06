@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWE2_TOURPLANNER.Model;
 
-namespace SWE2_TOURPLANNER.Model
+namespace SWE2_TOURPLANNER.HelperObjects
 {
     public class PortListHelper
     {

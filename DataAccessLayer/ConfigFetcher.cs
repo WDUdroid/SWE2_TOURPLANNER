@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SWE2_TOURPLANNER.HelperObjects;
 
 namespace SWE2_TOURPLANNER.DataAccessLayer
 {

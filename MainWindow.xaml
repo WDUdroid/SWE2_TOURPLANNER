@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SWE2_TOURPLANNER"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1200"
+        Title="MainWindow" Height="450" Width="800"
         MinHeight="400" MinWidth="500">
     <Window.DataContext>
         <local:MainViewModel />
@@ -143,30 +143,7 @@
             </TabControl>
             <TabControl Grid.Column="1"  Margin="5,5,5,5">
                 <TabItem Header="Image" Margin="0">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <!--<Image Source="{Binding CurrentData.TourImage}"></Image>-->
-                        <InkCanvas Width="800" Height="600" Grid.Row="0" Name="Ink" Strokes="{Binding InkStroke}" >
-                            <InkCanvas.DefaultDrawingAttributes >
-                                <DrawingAttributes
-                                    Color = "OrangeRed" Width = "6" />
-                            </InkCanvas.DefaultDrawingAttributes>
-                            <InkCanvas.Background>
-                                <ImageBrush Stretch="Uniform" ImageSource="{Binding CurrentData.TourImage}" />
-                            </InkCanvas.Background>
-                        </InkCanvas>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Command="{Binding SaveStrokes}">Save</Button>
-                            <Button Grid.Column="1" Command="{Binding ClearStrokes}">Clear</Button>
-                        </Grid>
-                    </Grid>
+                    <Image Source="{Binding CurrentData.TourImage}"></Image>
                 </TabItem>
                 <TabItem Header="General">
                     <Grid Background="#ffffff">

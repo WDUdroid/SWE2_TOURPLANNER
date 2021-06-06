@@ -4,15 +4,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Ink;
 using SWE2_TOURPLANNER.Annotations;
+using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Model;
 
 namespace SWE2_TOURPLANNER
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private readonly BusinessLayer.BusinessLayer _businessLayer = BusinessLayer.BusinessLayer.Instance;
+        private readonly BusinessLayer _businessLayer = BusinessLayer.Instance;
 
         public static ObservableCollection<TourEntry> Data { get; }
             = new ObservableCollection<TourEntry>();
@@ -87,17 +87,6 @@ namespace SWE2_TOURPLANNER
         private LogEntry _selectedLogListItem;
 
         // other Props
-        private StrokeCollection _inkStroke = new StrokeCollection();
-
-        public StrokeCollection InkStroke
-        {
-            get => this._inkStroke;
-            set
-            {
-                this._inkStroke = value;
-                this.OnPropertyChanged(); // using CallerMemberName
-            }
-        }
 
         // Tour Getter/Setter
         public string TourName
@@ -471,9 +460,6 @@ namespace SWE2_TOURPLANNER
         public RelayCommand ExportToursAsJsonCommand { get; }
         public RelayCommand ImportToursCommand { get; }
 
-        public RelayCommand ClearStrokes { get; }
-        public RelayCommand SaveStrokes { get; }
-
 
         public MainViewModel()
         {
@@ -482,21 +468,6 @@ namespace SWE2_TOURPLANNER
                 Data.Add(new TourEntry(item.TourName, item.TourDescription, item.RouteInformation,
                     item.TourDistance, item.TourFrom, item.TourTo, item.TourImage));
             }
-
-            ClearStrokes = new RelayCommand((_) =>
-            {
-                InkStroke = new StrokeCollection();
-            });
-
-            SaveStrokes = new RelayCommand((_) =>
-            {
-                if (CurrentData.TourName != null)
-                {
-                    CurrentData.TourImage =
-                        _businessLayer.SaveStrokes(CurrentData.TourName, CurrentData.TourImage, InkStroke);
-                    InkStroke = new StrokeCollection();
-                }
-            });
 
             AddTourCommand = new RelayCommand((_) =>
             {
@@ -623,8 +594,8 @@ namespace SWE2_TOURPLANNER
 
             EditTourCommand = new RelayCommand((_) =>
             {
-                if (EditTourDescription == string.Empty ||
-                    EditTourFrom == string.Empty || EditTourTo == string.Empty)
+                if (EditTourDescription == null ||
+                    EditTourFrom == null || EditTourTo == null)
                 {
                     MessageBox.Show("Please fill out all boxes!");
                 }
@@ -644,6 +615,7 @@ namespace SWE2_TOURPLANNER
 
                     if (CurrentlySelectedTour != null && Data.Any(i => i.TourName == CurrentlySelectedTour))
                     {
+                        //DatabaseHandler tmpDatabaseHandler = DatabaseHandler.Instance;
                         _businessLayer.DeleteOnlyTour(CurrentlySelectedTour);
                         CurrentData = null;
                         Data.Remove(Data.Single(i => i.TourName == CurrentlySelectedTour));
@@ -672,10 +644,8 @@ namespace SWE2_TOURPLANNER
 
             EditLogCommand = new RelayCommand((_) =>
             {
-                if (EditTotalTime == string.Empty || EditDistance == string.Empty 
-                    || EditElevation == string.Empty || EditAvgSpeed == string.Empty || 
-                    EditBpm == string.Empty || EditRating == string.Empty || EditReport == string.Empty 
-                    || EditUsedSupplies == String.Empty || EditTourmates == string.Empty)
+                if (EditTotalTime == null || EditDistance == null || EditElevation == null || EditAvgSpeed == null || 
+                    EditBpm == null || EditRating == null || EditReport == null || EditUsedSupplies == null || EditTourmates == null)
                 {
                     MessageBox.Show("Please fill out all boxes!");
                 }
