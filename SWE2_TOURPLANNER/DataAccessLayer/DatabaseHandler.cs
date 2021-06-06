@@ -9,7 +9,6 @@ using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Model;
 
 namespace SWE2_TOURPLANNER.DataAccessLayer
@@ -148,7 +147,7 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             {
                 Connection = con,
                 CommandText = $"DELETE FROM logs WHERE " +
-                              $"tourname = '{tourName}' AND logdate = '{logDate.ToString()}' AND totaltime = {totalTime} AND distance ={distance} AND " +
+                              $"tourname = '{tourName}' AND logdate = '{logDate}' AND totaltime = {totalTime} AND distance ={distance} AND " +
                               $"elevation = {elevation} AND avgspeed = '{avgSpeed}' AND " +
                               $"bpm = {bpm} AND rating = '{rating}' AND report = '{report}' AND usedsupplies = '{usedSupplies}' AND tourmates = '{tourmates}'"
             };
@@ -423,6 +422,28 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
             if (status < 0)
             {
                 MessageBox.Show($"ImportLogToTour -> An Error occurred, Error Code: '{status}'");
+            }
+
+            return status;
+        }
+
+        public int ReplaceTourImage(string tourName, string newPath)
+        {
+            using var con = new NpgsqlConnection(_databaseSource);
+            con.Open();
+
+            using var cmd = new NpgsqlCommand
+            {
+                Connection = con,
+                CommandText = $"UPDATE tours SET " +
+                              $"tourimage = '{newPath}' " +
+                              $"WHERE tourname = '{tourName}'"
+            };
+            var status = cmd.ExecuteNonQuery();
+
+            if (status < 0)
+            {
+                MessageBox.Show($"DeleteAllLogsFromTour -> An Error occurred, Error Code: {status}");
             }
 
             return status;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SWE2_TOURPLANNER.HelperObjects
+namespace SWE2_TOURPLANNER.Model
 {
     public class MapQuestDataHelper
     {

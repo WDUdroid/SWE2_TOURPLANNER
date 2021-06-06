@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using IronPdf;
 using SWE2_TOURPLANNER.Logger;
 using SWE2_TOURPLANNER.Model;
@@ -25,6 +27,10 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
                               $"<h1>LOGS:</h1>" +
                               $"<ol>";
 
+
+            int logSumDistance = 0;
+            float logAvgAvgSpeed = 0;
+
             foreach (var log in logs)
             {
                 buildPDF += $"<li>" +
@@ -38,9 +44,21 @@ namespace SWE2_TOURPLANNER.DataAccessLayer
                             $"<p> used supplies: {log.UsedSupplies}</p>" +
                             $"<p> tourmates: {log.Tourmates}</p>" +
                             $"</li>";
+
+                logSumDistance = logSumDistance + log.Distance;
+
+                if (log.AvgSpeed.All(char.IsDigit))
+                {
+                    logAvgAvgSpeed = logAvgAvgSpeed + int.Parse(log.AvgSpeed);
+                }
             }
 
+            logAvgAvgSpeed = logAvgAvgSpeed / logs.Count;
+
             buildPDF += "</ol>";
+
+            buildPDF += $"<h3>In der Tour zurückgelegte Distanze: {logSumDistance}m<h3>";
+            buildPDF += $"<h3>Durchschnittliche Geschwindigkeit in der Tour: {logAvgAvgSpeed}m/h<h3>";
 
             var renderer = new IronPdf.HtmlToPdf();
             var pdf = renderer.RenderHtmlAsPdf(buildPDF);

@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Ink;
 using IronPdf;
 using Newtonsoft.Json;
 using SWE2_TOURPLANNER.DataAccessLayer;
-using SWE2_TOURPLANNER.HelperObjects;
 using SWE2_TOURPLANNER.Logger;
 using SWE2_TOURPLANNER.Model;
 using SWE2_TOURPLANNER.Services;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
-namespace SWE2_TOURPLANNER
+namespace SWE2_TOURPLANNER.BusinessLayer
 {
     public class BusinessLayer
     {
@@ -79,7 +77,7 @@ namespace SWE2_TOURPLANNER
 
                 var availableFileName = _iO.AvailableFileName();
                 var imageBytes = _map.LoadImage(tmpMapQuestDataHelper.SessionId);
-                var savingStatus = _iO.SaveImage(availableFileName, imageBytes);
+                _iO.SaveNewTourImage(availableFileName, imageBytes);
 
                 tmpMapQuestDataHelper.TourImage = availableFileName;
 
@@ -245,6 +243,20 @@ namespace SWE2_TOURPLANNER
         public ObservableCollection<LogEntry> GetLogsOfTour(string tourName)
         {
             return _database.GetLogsOfTour(tourName);
+        }
+
+        public string SaveStrokes(string tourName, string originalImage, StrokeCollection strokes)
+        {
+            var baseBitmap = _iO.FetchImageFormPath(originalImage);
+            var strokesBitmap = _iO.ConvertStrokestoImage(strokes, 800, 600);
+            var combinedBitmap = _iO.CombineBitmap(baseBitmap, strokesBitmap);
+
+            var newFilePath = _iO.AvailableFileName();
+
+            _iO.UpdateTourImage(newFilePath ,combinedBitmap);
+            _database.ReplaceTourImage(tourName, newFilePath);
+
+            return newFilePath;
         }
 
         public static BusinessLayer Instance => instance;
